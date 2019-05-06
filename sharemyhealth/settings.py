@@ -221,7 +221,7 @@ SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
 DATE_INPUT_FORMATS = ['%Y-%m-%d']  # , '%d-%m-%Y']
 
 LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL = '/social-auth/login/vmi'
+LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 
 EXTERNAL_AUTH_NAME = "Google"
 
