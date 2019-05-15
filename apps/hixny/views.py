@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
+
 @login_required
 def get_authorization(request):
 
@@ -35,15 +36,21 @@ def get_authorization(request):
     response_json = r.json()
     # print(response_json)
     if 'access_token' not in response_json:
-        message = _("We're sorry. We could not connect to HIXNY. Please try again later. %s %s %s %s" % (data, response_json,
-                                                                                                   settings.HIXNY_TOKEN_API_URI,
-                                                                                                   settings.HIXNY_BASIC_AUTH_PASSWORD))
-        
+        message = _(
+            "We're sorry. We could not connect to HIXNY. Please try again later. %s %s %s %s" %
+            (data,
+             response_json,
+             settings.HIXNY_TOKEN_API_URI,
+             settings.HIXNY_BASIC_AUTH_PASSWORD))
+
         if settings.DEBUG is True:
-            
-            message = "%s %s %s %s %s" % (message, data, response_json,
-                                          settings.HIXNY_TOKEN_API_URI,tings.HIXNY_BASIC_AUTH_PASSWORD)
-            
+
+            message = "%s %s %s %s %s" % (message,
+                                          data,
+                                          response_json,
+                                          settings.HIXNY_TOKEN_API_URI,
+                                          settings.HIXNY_BASIC_AUTH_PASSWORD)
+
         messages.error(request, message)
         return HttpResponseRedirect(reverse('home'))
 
@@ -225,18 +232,19 @@ def approve_authorization(request):
 
             f = ET.XML(response5.content)
             for element in f:
-                #print("ELEMENT", element)
+                # print("ELEMENT", element)
                 if element.tag == "{urn:hl7-org:v3}ClinicalDocument":
-                     hp.cda_content = ET.tostring(element).decode()
-                     
-                     #convert the output to
-                     response = requests.post(settings.CDA2FHIR_SERVICE_URL,
-                                              data=hp.cda_content, headers={'Content-Type': 'application/xml'})
-                     
-                     hp.fhir_content = response.text
-                     hp.save()
+                    hp.cda_content = ET.tostring(element).decode()
+
+                    # convert the output to
+                    response = requests.post(
+                        settings.CDA2FHIR_SERVICE_URL, data=hp.cda_content, headers={
+                            'Content-Type': 'application/xml'})
+
+                    hp.fhir_content = response.text
+                    hp.save()
             hp.save()
-                
+
             # fn = "%s.xml" % (up.subject)
             # hp.cda_file.save(fn, ContentFile(response5.content))
             # hp.save()

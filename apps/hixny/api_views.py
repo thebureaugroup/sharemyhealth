@@ -17,6 +17,7 @@ def get_patient_fhir_content(request):
     hp = HIXNYProfile.objects.get(user=user)
     return JsonResponse(json.loads(hp.fhir_content))
 
+
 @require_GET
 @login_required
 def get_patient_fhir_content_test(request):

@@ -17,9 +17,9 @@ urlpatterns = [
     url(r'api/cda-in-json-test$', get_cda_in_json_test,
         name='get_cda_in_json_test'),
     url(r'api/cda-test$', get_cda_raw_test, name='get_cda_raw_test'),
-    # url(r'api/fhir/stu3/Patient/everything(?P<id>[^/]+)$', get_patient_fhir_content_test, name='get_patient_fhir_content_test2'),
-    url(r'api/fhir/stu3/Patient/\$everything$', get_patient_fhir_content, name='get_patient_fhir_content'),
-    url(r'api/test/fhir/stu3/Patient/\$everything$', get_patient_fhir_content_test, name='get_patient_fhir_content_test'),
-    # url(r'api/fhir/stu3/Patient/(?P<patient_id>[^/]+)/$everything$', get_patient_fhir_content, name='get_patient_fhir_content_with_id'),
+    url(r'api/fhir/stu3/Patient/\$everything$',
+        get_patient_fhir_content, name='get_patient_fhir_content'),
+    url(r'api/test/fhir/stu3/Patient/\$everything$',
+        get_patient_fhir_content_test, name='get_patient_fhir_content_test'),
 
 ]
