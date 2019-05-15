@@ -6,6 +6,24 @@ from collections import OrderedDict
 from .models import HIXNYProfile
 from ..accounts.models import UserProfile
 from django.contrib.auth.decorators import login_required
+import json
+
+
+@require_GET
+@protected_resource()
+def get_patient_fhir_content(request):
+    user = request.resource_owner
+    up, g_o_c = UserProfile.objects.get_or_create(user=user)
+    hp = HIXNYProfile.objects.get(user=user)
+    return JsonResponse(json.loads(hp.fhir_content))
+
+@require_GET
+@login_required
+def get_patient_fhir_content_test(request):
+    user = request.user
+    up, g_o_c = UserProfile.objects.get_or_create(user=user)
+    hp = HIXNYProfile.objects.get(user=user)
+    return JsonResponse(json.loads(hp.fhir_content))
 
 
 @require_GET
