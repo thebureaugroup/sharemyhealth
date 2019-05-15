@@ -12,10 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
-# curl  https://integration.hixny.com:6443/ -k --user
-# password-client:20P@55230R419 -d
-# "grant_type=password&username=avairsqa&password=sector7g&scope=/PHRREGISTER"
-
 
 @login_required
 def get_authorization(request):
@@ -36,12 +32,26 @@ def get_authorization(request):
         auth=HTTPBasicAuth(
             'password-client',
             settings.HIXNY_BASIC_AUTH_PASSWORD))
-    print(data)
+    # print(data)
     response_json = r.json()
-    print(response_json)
+    # print(response_json)
     if 'access_token' not in response_json:
-        messages.error(
-            request, _("We're sorry. We could not connect to HIXNY. Please try again later."))
+        message = _(
+            "We're sorry. We could not connect to HIXNY. Please try again later. %s %s %s %s" %
+            (data,
+             response_json,
+             settings.HIXNY_TOKEN_API_URI,
+             settings.HIXNY_BASIC_AUTH_PASSWORD))
+
+        if settings.DEBUG is True:
+
+            message = "%s %s %s %s %s" % (message,
+                                          data,
+                                          response_json,
+                                          settings.HIXNY_TOKEN_API_URI,
+                                          settings.HIXNY_BASIC_AUTH_PASSWORD)
+
+        messages.error(request, message)
         return HttpResponseRedirect(reverse('home'))
 
     access_token = response_json['access_token']
@@ -79,11 +89,11 @@ def get_authorization(request):
                                        'Authorization': access_token_bearer},
                               data=patient_search_xml
                               )
-    print(response2.content)
-    f = ET.XML(response2.content)
+    # print(response2.content)
+    f = ET.XML(response2.text)
     error_message = ""
     for element in f:
-        print("ELEMENT", element)
+        # print("ELEMENT", element)
         if element.tag == "{urn:hl7-org:v3}Notice":
             error_message = element.text
         for e in element.getchildren():
@@ -95,7 +105,7 @@ def get_authorization(request):
             if e.tag == "{urn:hl7-org:v3}TERMSACCEPTED":
                 hp.terms_accepted = e.text
             if e.tag == "{http://www.intersystems.com/hs/portal/enrollment}TermsString":
-                hp.terms_string = e.text.replace('\n', '').replace('\t', '')
+                hp.terms_string = e.text
             if e.tag == "{urn:hl7-org:v3}StageUserPassword":
                 hp.stageuser_password = e.text
             if e.tag == "{urn:hl7-org:v3}StageUserToken":
@@ -177,7 +187,10 @@ def approve_authorization(request):
         <DATAREQUESTOR>%s</DATAREQUESTOR>
         <CONSENTTOSHAREDATA>%s</CONSENTTOSHAREDATA>
         </CONSUMERDIRECTIVEPAYLOAD>
-        """ % (hp.mrn,  up.birthdate_intersystems, hp.data_requestor, hp.consent_to_share_data)
+        """ % (hp.mrn,
+               up.birthdate_intersystems,
+               hp.data_requestor,
+               hp.consent_to_share_data)
     # print(consumer_directive_xml)
 
     response4 = requests.post(settings.HIXNY_CONSUMERDIRECTIVE_API_URI,
@@ -218,8 +231,20 @@ def approve_authorization(request):
                 data=get_document_payload_xml)
 
             f = ET.XML(response5.content)
-            hp.cda_content = response5.content
+            for element in f:
+                # print("ELEMENT", element)
+                if element.tag == "{urn:hl7-org:v3}ClinicalDocument":
+                    hp.cda_content = ET.tostring(element).decode()
+
+                    # convert the output to
+                    response = requests.post(
+                        settings.CDA2FHIR_SERVICE_URL, data=hp.cda_content, headers={
+                            'Content-Type': 'application/xml'})
+
+                    hp.fhir_content = response.text
+                    hp.save()
             hp.save()
+
             # fn = "%s.xml" % (up.subject)
             # hp.cda_file.save(fn, ContentFile(response5.content))
             # hp.save()
