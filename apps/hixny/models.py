@@ -8,7 +8,7 @@ __author__ = "Alan Viars"
 class HIXNYProfile(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE,
                                 db_index=True, null=False)
-    mrn = models.CharField(max_length=64, default='', blank=True)
+    mrn = models.CharField(max_length=64, default='', blank=True, db_index=True)
     stageuser_password = models.CharField(
         max_length=64, default='', blank=True)
     stageuser_token = models.CharField(max_length=64, default='', blank=True)
@@ -17,7 +17,12 @@ class HIXNYProfile(models.Model):
     terms_accepted = models.TextField(default='', blank=True)
     terms_string = models.TextField(default='', blank=True)
     user_accept = models.BooleanField(default=False, blank=True)
+    terms_of_service = models.CharField(max_length=64, default='', blank=True)
     cda_content = models.TextField(default='', blank=True)
+    cda_content_md5hash = models.CharField(max_length=64, default='', blank=True)
+    fhir_content = models.TextField(default='', blank=True)
+    fhir_content_embellish = models.TextField(default='', blank=True,
+                                              help_text='The raw CDA2FHIR translation with enhanced data.')
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 

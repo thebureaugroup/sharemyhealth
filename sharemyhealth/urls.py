@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^api/', include('apps.api.urls')),
     url(r'^fhir/', include('apps.fhirproxy.urls')),
     url(r'^hixny/', include('apps.hixny.urls')),
+    url(r'^rhio/', include('apps.hixny.urls')),
     url(r'^testclient/', include('apps.testclient.urls')),
     path('', authenticated_home, name='home'),
 ]

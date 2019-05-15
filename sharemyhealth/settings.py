@@ -339,3 +339,6 @@ HIXNY_GETDOCUMENT_API_URI = "%s/GETDOCUMENT" % (HIXNY_PATIENT_API_URI)
 HIXNY_WORKBENCH_USERNAME = env('HIXNY_WORKBENCH_USERNAME', '')
 HIXNY_WORKBENCH_PASSWORD = env('HIXNY_WORKBENCH_PASSWORD', '')
 HIXNY_BASIC_AUTH_PASSWORD = env('HIXNY_BASIC_AUTH_PASSWORD', '')
+
+# Should be operated behind a firewall and in ssl/https in production.
+CDA2FHIR_SERVICE_URL = env('CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
