@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'apps.testclient',
     'apps.api',  # Dummy CDA App for now
     'apps.fhirproxy',
-    'apps.hixny',
+    'apps.hie',
     # 3rd Party ---------------------
     'corsheaders',
     'bootstrapform',
@@ -172,7 +172,6 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'collectedstatic')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-APPLICATION_TITLE = "HIXNY FHIR Server"
 
 # AWS Credentials need to support SES, SQS and SNS
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', 'change-me')
@@ -226,7 +225,7 @@ LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 EXTERNAL_AUTH_NAME = "Google"
 
 APPLICATION_TITLE = env('DJANGO_APPLICATION_TITLE',
-                        'HIXNY OAuth2 Provider')
+                        'HIE API')
 ORGANIZATION_TITLE = env(
     'DJANGO_ORGANIZATION_TITLE',
     'Alliance for Better Health')
@@ -244,7 +243,7 @@ EXPLAINATION_LINE = 'This service allows Medicare beneficiaries to connect their
 EXPLAINATION_LINE = env('DJANGO_EXPLAINATION_LINE ', EXPLAINATION_LINE)
 USER_DOCS_URI = "https://abhealth.us"
 USER_DOCS_TITLE = "User Documentation"
-USER_DOCS = "USer Docs"
+USER_DOCS = "User Docs"
 # LINKS TO DOCS
 DEVELOPER_DOCS_URI = "https:/abhealth.us"
 DEVELOPER_DOCS_TITLE = "Developer Documentation"
@@ -327,19 +326,22 @@ SETTINGS_EXPORT = [
 ]
 
 
-HIXNY_TOKEN_API_URI = env('HIXNY_TOKEN_API_URI',
-                          'https://integration.hixny.com:6443/')
-HIXNY_PATIENT_API_URI = env('HIXNY_PATIENT_API_URI',
-                            'https://integration.hixny.com:5443')
-HIXNY_PHRREGISTER_API_URI = "%s/PHRREGISTER" % (HIXNY_PATIENT_API_URI)
-HIXNY_ACTIVATESTAGEDUSER_API_URI = "%s/ACTIVATESTAGEDUSER" % (
-    HIXNY_PATIENT_API_URI)
-HIXNY_CONSUMERDIRECTIVE_API_URI = "%s/CONSUMERDIRECTIVE" % (
-    HIXNY_PATIENT_API_URI)
-HIXNY_GETDOCUMENT_API_URI = "%s/GETDOCUMENT" % (HIXNY_PATIENT_API_URI)
-HIXNY_WORKBENCH_USERNAME = env('HIXNY_WORKBENCH_USERNAME', '')
-HIXNY_WORKBENCH_PASSWORD = env('HIXNY_WORKBENCH_PASSWORD', '')
-HIXNY_BASIC_AUTH_PASSWORD = env('HIXNY_BASIC_AUTH_PASSWORD', '')
+# HIE HIXNY
+
+HIE_TOKEN_API_URI = env('HIE_TOKEN_API_URI',
+                        'https://integration.hixny.com:6443/')
+HIE_PATIENT_API_URI = env('HIE_PATIENT_API_URI',
+                          'https://integration.hixny.com:5443')
+HIE_PHRREGISTER_API_URI = "%s/PHRREGISTER" % (HIE_PATIENT_API_URI)
+HIE_ACTIVATESTAGEDUSER_API_URI = "%s/ACTIVATESTAGEDUSER" % (
+    HIE_PATIENT_API_URI)
+HIE_CONSUMERDIRECTIVE_API_URI = "%s/CONSUMERDIRECTIVE" % (
+    HIE_PATIENT_API_URI)
+HIE_GETDOCUMENT_API_URI = "%s/GETDOCUMENT" % (HIE_PATIENT_API_URI)
+HIE_WORKBENCH_USERNAME = env('HIE_WORKBENCH_USERNAME', '')
+HIE_WORKBENCH_PASSWORD = env('HIE_WORKBENCH_PASSWORD', '')
+HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 
 # Should be operated behind a firewall and in ssl/https in production.
-CDA2FHIR_SERVICE_URL = env('CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+CDA2FHIR_SERVICE_URL = env(
+    'CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')

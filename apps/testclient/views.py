@@ -78,9 +78,23 @@ def test_userinfo(request):
         return HttpResponseRedirect(reverse('testclient_error_page'))
     oas = OAuth2Session(
         request.session['client_id'], token=request.session['token'])
-    userinfo_uri = "%s/accounts/userprofile" % (request.session['resource_uri'])
+    userinfo_uri = "%s/accounts/userprofile" % (
+        request.session['resource_uri'])
     userinfo = oas.get(userinfo_uri).json(object_pairs_hook=OrderedDict)
     return JsonResponse(userinfo)
+
+
+@never_cache
+def test_patient_everything_bundle(request):
+    if 'token' not in request.session:
+        return HttpResponseRedirect(reverse('testclient_error_page'))
+    oas = OAuth2Session(
+        request.session['client_id'], token=request.session['token'])
+    pe_uri = "%s/hie/api/fhir/stu3/Patient/$everything" % (
+        request.session['resource_uri'])
+    print(pe_uri)
+    pe_response = oas.get(pe_uri).json(object_pairs_hook=OrderedDict)
+    return JsonResponse(pe_response)
 
 
 @never_cache

@@ -5,7 +5,7 @@ from ..accounts.models import UserProfile
 import requests
 from requests.auth import HTTPBasicAuth
 import xml.etree.ElementTree as ET
-from .models import HIXNYProfile
+from .models import HIEProfile
 from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
@@ -17,39 +17,39 @@ from django.http import HttpResponseRedirect
 def get_authorization(request):
 
     up, g_o_c = UserProfile.objects.get_or_create(user=request.user)
-    hp, g_o_c = HIXNYProfile.objects.get_or_create(user=request.user)
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
     status = ""
     notice = ""
     data = {
         "grant_type": "password",
-        "username": settings.HIXNY_WORKBENCH_USERNAME,
-        "password": settings.HIXNY_WORKBENCH_PASSWORD,
+        "username": settings.HIE_WORKBENCH_USERNAME,
+        "password": settings.HIE_WORKBENCH_PASSWORD,
         "scope": "/PHRREGISTER"}
     r = requests.post(
-        settings.HIXNY_TOKEN_API_URI,
+        settings.HIE_TOKEN_API_URI,
         data=data,
         verify=False,
         auth=HTTPBasicAuth(
             'password-client',
-            settings.HIXNY_BASIC_AUTH_PASSWORD))
+            settings.HIE_BASIC_AUTH_PASSWORD))
     # print(data)
     response_json = r.json()
     # print(response_json)
     if 'access_token' not in response_json:
         message = _(
-            "We're sorry. We could not connect to HIXNY. Please try again later. %s %s %s %s" %
+            "We're sorry. We could not connect to HIE. Please try again later. DATA=%s response=%s TOKEN_URI=%s BASIC_AUTH=%s" %
             (data,
              response_json,
-             settings.HIXNY_TOKEN_API_URI,
-             settings.HIXNY_BASIC_AUTH_PASSWORD))
+             settings.HIE_TOKEN_API_URI,
+             settings.HIE_BASIC_AUTH_PASSWORD))
 
         if settings.DEBUG is True:
 
             message = "%s %s %s %s %s" % (message,
                                           data,
                                           response_json,
-                                          settings.HIXNY_TOKEN_API_URI,
-                                          settings.HIXNY_BASIC_AUTH_PASSWORD)
+                                          settings.HIE_TOKEN_API_URI,
+                                          settings.HIE_BASIC_AUTH_PASSWORD)
 
         messages.error(request, message)
         return HttpResponseRedirect(reverse('home'))
@@ -81,9 +81,9 @@ def get_authorization(request):
                         """ % (up.gender_intersystems,
                                up.birthdate_intersystems,
                                up.user.last_name, up.user.first_name,
-                               settings.HIXNY_WORKBENCH_USERNAME)
+                               settings.HIE_WORKBENCH_USERNAME)
     # print(patient_search_xml)
-    response2 = requests.post(settings.HIXNY_PHRREGISTER_API_URI,
+    response2 = requests.post(settings.HIE_PHRREGISTER_API_URI,
                               verify=False,
                               headers={'Content-Type': 'application/xml',
                                        'Authorization': access_token_bearer},
@@ -113,7 +113,7 @@ def get_authorization(request):
 
         hp.save()
     if error_message:
-        error_message = "HIXNY Responded: %s" % (error_message)
+        error_message = "HIE Responded: %s" % (error_message)
         messages.error(request, error_message)
         return HttpResponseRedirect(reverse('home'))
 
@@ -133,20 +133,20 @@ def get_authorization(request):
 def approve_authorization(request):
 
     up, g_o_c = UserProfile.objects.get_or_create(user=request.user)
-    hp, g_o_c = HIXNYProfile.objects.get_or_create(user=request.user)
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
     status = ""
     notice = ""
     r = requests.post(
-        settings.HIXNY_TOKEN_API_URI,
+        settings.HIE_TOKEN_API_URI,
         data={
             "grant_type": "password",
-            "username": settings.HIXNY_WORKBENCH_USERNAME,
-            "password": settings.HIXNY_WORKBENCH_PASSWORD,
+            "username": settings.HIE_WORKBENCH_USERNAME,
+            "password": settings.HIE_WORKBENCH_PASSWORD,
             "scope": "/PHRREGISTER"},
         verify=False,
         auth=HTTPBasicAuth(
             'password-client',
-            settings.HIXNY_BASIC_AUTH_PASSWORD))
+            settings.HIE_BASIC_AUTH_PASSWORD))
     response_json = r.json()
     access_token = response_json['access_token']
     access_token_bearer = "Bearer %s" % (access_token)
@@ -165,7 +165,7 @@ def approve_authorization(request):
                        hp.stageuser_password,
                        hp.consent_to_share_data)
     # print(activate_xml)
-    response3 = requests.post(settings.HIXNY_ACTIVATESTAGEDUSER_API_URI,
+    response3 = requests.post(settings.HIE_ACTIVATESTAGEDUSER_API_URI,
                               verify=False,
                               headers={'Content-Type': 'application/xml',
                                        'Authorization': access_token_bearer},
@@ -193,7 +193,7 @@ def approve_authorization(request):
                hp.consent_to_share_data)
     # print(consumer_directive_xml)
 
-    response4 = requests.post(settings.HIXNY_CONSUMERDIRECTIVE_API_URI,
+    response4 = requests.post(settings.HIE_CONSUMERDIRECTIVE_API_URI,
                               verify=False,
                               headers={'Content-Type': 'application/xml',
                                        'Authorization': access_token_bearer},
@@ -223,7 +223,7 @@ def approve_authorization(request):
                             """ % (hp.mrn, hp.data_requestor)
 
             response5 = requests.post(
-                settings.HIXNY_GETDOCUMENT_API_URI,
+                settings.HIE_GETDOCUMENT_API_URI,
                 verify=False,
                 headers={
                     'Content-Type': 'application/xml',

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from jwkest.jwt import JWT
-from ..hixny.models import HIXNYProfile
+from ..hie.models import HIEProfile
 from django.contrib import messages
 from django.conf import settings
 
@@ -26,23 +26,25 @@ def authenticated_home(request):
             id_token = "No ID token."
             parsed_id_token = {'sub': '', 'ial': '1'}
 
-        print
+        hp, g_o_c = HIEProfile.objects.get_or_create(
+            user=request.user)
+
         if parsed_id_token.get('ial') not in ('2', '3'):
             # redirect to get verified
             messages.warning(request, 'Your identity has not been verified. \
                              This must be completed prior to access to personal health information.')
 
-            if settings.HIXNY_WORKBENCH_USERNAME:
-                hp, g_o_c = HIXNYProfile.objects.get_or_create(
-                    user=request.user)
+            if settings.HIE_WORKBENCH_USERNAME:
 
                 if hp.user_accept is False:
                     messages.warning(
-                        request, 'Your account is not yet connected to HIXNY personal health information.')
+                        request, 'Your account is not yet connected to {{settings.APPLICATION_TITLE}} \
+                                  personal health information.')
 
                 if hp.cda_content:
                     messages.success(
-                        request, 'Your account is already linked to your HIXNY personal health information.')
+                        request, 'Your account is already linked to your {{settings.APPLICATION_TITLE}} \
+                                  personal health information.')
 
         try:
             profile = request.user.userprofile
@@ -50,7 +52,7 @@ def authenticated_home(request):
             profile = None
 
         # this is a GET
-        context = {'name': name, 'profile': profile,
+        context = {'name': name, 'profile': profile, 'hp': hp,
                    'id_token': id_token,
                    'id_token_payload': parsed_id_token}
 
