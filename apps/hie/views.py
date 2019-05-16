@@ -256,5 +256,5 @@ def approve_authorization(request):
                "response4": response4,
                "response5": response5,
                "hp": hp}
-    
+
     return render(request, 'hixny-approve-agreement.html', context)
