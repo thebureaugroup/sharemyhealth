@@ -24,57 +24,64 @@
     <div class="row text-center">
         <div class="col-lg-12">
 
-	Your Identity Assurance Level (IAL) is :
-				<span class="label label-default">{{ id_token_payload.ial }}</span>
-				</div>
+
+
+
 
 {% ifequal id_token_payload.ial  "1" %}
+
+<h3>Identity Verification Required</h3>
+
 <p>Your identity assurance level of <span class="label label-default">{{ id_token_payload.ial }} </span> is insufficient
-to gain access you personal health information (PHI). You will need to
+to gain access your personal health information (PHI). You will need to
 verify your identity before you can gain full access. Please see your point of contact to complete this step.
 
 {% else%}
 
-<a href="/hixny/get-authorization">Get my data from the Health Information Exchange of New York (HIXNY)</a>
+<h3>Fetch Data from {{settings.APPLICATION_TITLE}} </h3>
 
+
+ {% ifequal hp.cda_content "" %}
+                         <a href="{% url 'hie_get_authorization' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Signup to get your Data from {{settings.APPLICATION_TITLE}} </button></a>
+ {% else %}
+                       
+                        <a href="{% url 'approve_authorization' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest data from {{settings.APPLICATION_TITLE}} </button></a>
+                        <h3>Download your Data</h3>
+
+
+                         <a href="{% url 'get_cda_raw_test' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-download"></i> CDA Format</button></a>
+                        
+                         <a href="{% url 'get_patient_fhir_content_test' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-download"></i> FHIR Format</button></a>
+
+                       
+                        
 {% endifequal %}
 
 
 
 
+<h3>Information About You</h3>
+	Your Identity Assurance Level (IAL) is : <span class="label label-default">{{ id_token_payload.ial }}</span>
+			
 
+{% endifequal %}
 
-
-
-   
-         <div class="col-lg-12">
-
-
-
-
-Your Authenticator Assurance Level (AAL) is :
-				<span class="label label-default">{{ id_token_payload.aal }}</span>
-				</div>
-  
-   
      
         <div class="col-lg-12">
 
 
 
 
-The id_token is :
+The id_token from the relying party is :
 				<pre>{{ id_token }}</pre>
 				</div>
         
         
  
-        <div class="col-lg-12">
-
-    The id_token's payload is:
-    
-				{{id_token_payload }}
-
 				</div>
 	    </div>
 		

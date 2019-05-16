@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import HIXNYProfile
+from .models import HIEProfile
 
 # Copyright Videntity Systems Inc.
 
 __author__ = "Alan Viars"
 
 
-class HIXNYProfileAdmin(admin.ModelAdmin):
+class HIEProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'subject', 'mrn',)
     search_fields = [
         'user__first_name',
@@ -15,4 +15,4 @@ class HIXNYProfileAdmin(admin.ModelAdmin):
     raw_id_fields = ("user", )
 
 
-admin.site.register(HIXNYProfile, HIXNYProfileAdmin)
+admin.site.register(HIEProfile, HIEProfileAdmin)
