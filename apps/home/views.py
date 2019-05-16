@@ -27,9 +27,8 @@ def authenticated_home(request):
             parsed_id_token = {'sub': '', 'ial': '1'}
 
         hp, g_o_c = HIEProfile.objects.get_or_create(
-                    user=request.user)
-    
-    
+            user=request.user)
+
         if parsed_id_token.get('ial') not in ('2', '3'):
             # redirect to get verified
             messages.warning(request, 'Your identity has not been verified. \
