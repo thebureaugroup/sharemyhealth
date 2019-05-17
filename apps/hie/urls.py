@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'get-authorization$', get_authorization, name='hie_get_authorization'),
     url(r'approve-authorization$', approve_authorization,
         name='approve_authorization'),
-    url(r'api/cda-in-json$', get_cda_in_json, name='get_ cda_in_json'),
+    url(r'api/cda-in-json$', get_cda_in_json, name='get_cda_in_json'),
     url(r'api/cda$', get_cda_raw, name='get_cda_raw'),
     url(r'api/cda-in-json-test$', get_cda_in_json_test,
         name='get_cda_in_json_test'),
