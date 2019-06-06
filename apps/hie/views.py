@@ -14,6 +14,132 @@ from django.http import HttpResponseRedirect
 
 
 @login_required
+def cda2fhir_patient_data(request):
+    up, g_o_c = UserProfile.objects.get_or_create(user=request.user)
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
+    # convert
+    response = requests.post(
+        settings.CDA2FHIR_SERVICE_URL, data=hp.cda_content, headers={
+            'Content-Type': 'application/xml'})
+
+    hp.fhir_content = response.text
+    hp.save()
+    messages.success(request, "CDA to FHIR.")
+    return HttpResponseRedirect(reverse('home'))
+
+
+@login_required
+def refresh_patient_data(request):
+
+    up, g_o_c = UserProfile.objects.get_or_create(user=request.user)
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
+    data = {
+        "grant_type": "password",
+        "username": settings.HIE_WORKBENCH_USERNAME,
+        "password": settings.HIE_WORKBENCH_PASSWORD,
+        "scope": "/PHRREGISTER"}
+    r = requests.post(
+        settings.HIE_TOKEN_API_URI,
+        data=data,
+        verify=False,
+        auth=HTTPBasicAuth(
+            'password-client',
+            settings.HIE_BASIC_AUTH_PASSWORD))
+    # print(data)
+    response_json = r.json()
+    # print(response_json)
+    if 'access_token' not in response_json:
+        message = _(
+            "We're sorry. We could not connect to HIE. Please try again later. DATA=%s response=%s TOKEN_URI=%s BASIC_AUTH=%s" %
+            (data,
+             response_json,
+             settings.HIE_TOKEN_API_URI,
+             settings.HIE_BASIC_AUTH_PASSWORD))
+
+        if settings.DEBUG is True:
+
+            message = "%s %s %s %s %s" % (message,
+                                          data,
+                                          response_json,
+                                          settings.HIE_TOKEN_API_URI,
+                                          settings.HIE_BASIC_AUTH_PASSWORD)
+
+        messages.error(request, message)
+        return HttpResponseRedirect(reverse('home'))
+
+    # We have an access token so continurte with the consumer directive.
+    access_token = response_json['access_token']
+    access_token_bearer = "Bearer %s" % (access_token)
+
+    consumer_directive_xml = """
+        <CONSUMERDIRECTIVEPAYLOAD>
+        <MRN>%s</MRN>
+        <DOB>%s</DOB>
+        <DATAREQUESTOR>%s</DATAREQUESTOR>
+        <CONSENTTOSHAREDATA>%s</CONSENTTOSHAREDATA>
+        </CONSUMERDIRECTIVEPAYLOAD>
+        """ % (hp.mrn,
+               up.birthdate_intersystems,
+               hp.data_requestor,
+               hp.consent_to_share_data)
+    print(consumer_directive_xml)
+
+    response4 = requests.post(settings.HIE_CONSUMERDIRECTIVE_API_URI,
+                              verify=False,
+                              headers={'Content-Type': 'application/xml',
+                                       'Authorization': access_token_bearer},
+                              data=consumer_directive_xml)
+
+    # print("Consumer Directive response")
+    f = ET.XML(response4.content)
+    for element in f:
+        # print("ELEMENT", element)
+        if element.tag == "{urn:hl7-org:v3}Status":
+            status = element.text
+        if element.tag == "{urn:hl7-org:v3}Notice":
+            notice = element.text
+
+    response5 = None
+    print("STATUS", status, notice)
+    if status == "OK":
+        hp.save()
+        # print(notice)
+        if notice in ("Document has been prepared.",
+                      "Document already exists."):
+
+            get_document_payload_xml = """<GETDOCUMENTPAYLOAD>
+                                          <MRN>%s</MRN>
+                                          <DATAREQUESTOR>%s</DATAREQUESTOR>
+                                          </GETDOCUMENTPAYLOAD>
+                            """ % (hp.mrn, hp.data_requestor)
+
+            response5 = requests.post(
+                settings.HIE_GETDOCUMENT_API_URI,
+                verify=False,
+                headers={
+                    'Content-Type': 'application/xml',
+                    'Authorization': access_token_bearer},
+                data=get_document_payload_xml)
+
+            f = ET.XML(response5.content)
+            for element in f:
+                # print("ELEMENT", element)
+                if element.tag == "{urn:hl7-org:v3}ClinicalDocument":
+                    hp.cda_content = ET.tostring(element).decode()
+
+                    # convert the output to
+                    response = requests.post(
+                        settings.CDA2FHIR_SERVICE_URL, data=hp.cda_content, headers={
+                            'Content-Type': 'application/xml'})
+
+                    hp.fhir_content = response.text
+                    hp.save()
+            hp.save()
+    messages.success(request, "Data refreshed.")
+    return HttpResponseRedirect(reverse('home'))
+
+
+@login_required
 def get_authorization(request):
 
     up, g_o_c = UserProfile.objects.get_or_create(user=request.user)
@@ -56,8 +182,6 @@ def get_authorization(request):
 
     access_token = response_json['access_token']
     access_token_bearer = "Bearer %s" % (access_token)
-    # print("AT", access_token)
-    hp.save()
 
     patient_search_xml = """
                         <PatientSearchPayLoad>

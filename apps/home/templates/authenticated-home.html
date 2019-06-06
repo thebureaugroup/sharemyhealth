@@ -41,13 +41,13 @@ verify your identity before you can gain full access. Please see your point of c
 <h3>Fetch Data from {{settings.APPLICATION_TITLE}} </h3>
 
 
- {% ifequal hp.cda_content "" %}
+ {% ifequal hp.mrn "" %}
                          <a href="{% url 'hie_get_authorization' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Signup to get your Data from {{settings.APPLICATION_TITLE}} </button></a>
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Connect to HIXNY {{ settings.APPLICATION_TITLE }} </button></a>
  {% else %}
                        
                         <a href="{% url 'approve_authorization' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest data from {{settings.APPLICATION_TITLE}} </button></a>
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest data from {{ settings.APPLICATION_TITLE }} </button></a>
                         <h3>Download your Data</h3>
 
 
@@ -62,7 +62,10 @@ verify your identity before you can gain full access. Please see your point of c
 {% endifequal %}
 
 
-
+<a href="{% url 'hie_refresh_patient_data' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Refresh Data from {{ settings.APPLICATION_TITLE }}  </button></a>
+<a href="{% url 'cda2fhir_patient_data' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> CDA2FHIR </button></a>
 
 <h3>Information About You</h3>
 	Your Identity Assurance Level (IAL) is : <span class="label label-default">{{ id_token_payload.ial }}</span>
@@ -72,8 +75,6 @@ verify your identity before you can gain full access. Please see your point of c
 
      
         <div class="col-lg-12">
-
-
 
 
 The id_token from the relying party is :

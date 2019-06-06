@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib import admin
-from .views import get_authorization, approve_authorization
+from .views import get_authorization, approve_authorization,  refresh_patient_data, cda2fhir_patient_data
 from .api_views import (get_cda_in_json, get_cda_raw,
                         get_cda_in_json_test, get_cda_raw_test,
                         get_patient_fhir_content,
@@ -9,6 +9,10 @@ from .api_views import (get_cda_in_json, get_cda_raw,
 admin.autodiscover()
 
 urlpatterns = [
+
+    url(r'cda2fhir$',  cda2fhir_patient_data,   name='cda2fhir_patient_data'),
+    url(r'refresh-patient-data$',  refresh_patient_data,
+        name='hie_refresh_patient_data'),
     url(r'get-authorization$', get_authorization, name='hie_get_authorization'),
     url(r'approve-authorization$', approve_authorization,
         name='approve_authorization'),

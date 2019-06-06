@@ -225,7 +225,7 @@ LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 EXTERNAL_AUTH_NAME = "Google"
 
 APPLICATION_TITLE = env('DJANGO_APPLICATION_TITLE',
-                        'HIE API')
+                        'HIXNY API')
 ORGANIZATION_TITLE = env(
     'DJANGO_ORGANIZATION_TITLE',
     'Alliance for Better Health')
