@@ -1,3 +1,5 @@
+import json
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
@@ -5,8 +7,7 @@ from oauth2_provider.decorators import protected_resource
 from collections import OrderedDict
 from .models import HIEProfile
 from ..accounts.models import UserProfile
-from django.contrib.auth.decorators import login_required
-import json
+from . import hixny_requests
 
 
 @require_GET
@@ -14,7 +15,12 @@ import json
 def get_patient_fhir_content(request):
     user = request.resource_owner
     up, g_o_c = UserProfile.objects.get_or_create(user=user)
-    hp = HIEProfile.objects.get(user=user)
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=user)
+    if request.GET.get('refresh'):
+        hie_data = hixny_requests.fetch_patient_data(user, hp, up)
+        if not hie_data.get('error'):
+            hp.__dict__.update(**hie_data)
+            hp.save()
     return JsonResponse(json.loads(hp.fhir_content))
 
 
