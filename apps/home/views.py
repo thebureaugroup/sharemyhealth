@@ -4,8 +4,28 @@ from jwkest.jwt import JWT
 from ..hie.models import HIEProfile
 from django.contrib import messages
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 _author_ = "Alan Viars"
+
+
+@login_required
+def id_token_payload_json(request):
+    print("here")
+    try:
+        vmi = request.user.social_auth.filter(
+            provider='verifymyidentity-openidconnect')[0]
+        extra_data = vmi.extra_data
+        if 'id_token' in vmi.extra_data.keys():
+            id_token = extra_data.get('id_token')
+            parsed_id_token = JWT().unpack(id_token)
+            parsed_id_token = parsed_id_token.payload()
+    except Exception:
+        id_token = "No ID token."
+        parsed_id_token = {'sub': '', 'ial': '1',
+                           "note": "No ID token for this user"}
+    return JsonResponse(parsed_id_token)
 
 
 def authenticated_home(request):
