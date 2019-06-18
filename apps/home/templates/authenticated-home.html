@@ -76,17 +76,20 @@ verify your identity before you can gain full access. Please see your point of c
      
         <div class="col-lg-12">
 
-
-The id_token from the relying party is :
+<h3>Relying Party Information</h3>
+The id_token from the Identity provider is :
 				<pre>{{ id_token }}</pre>
 				</div>
-        
-        
- 
+            
+
+    
 				</div>
+        		          <a href="{% url 'id_token_payload_json' %}">
+      <button type="button" class="btn btn-default"> <i class="fa fa-search"></i> Look inside </button></a>   
 	    </div>
-		
+
     </div> <!-- /.row -->
+ 
  </div> <!-- /.well -->
 </div><!-- /.container -->
 
