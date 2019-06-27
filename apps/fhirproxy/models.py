@@ -22,10 +22,10 @@ class Crosswalk(models.Model):
     fhir_patient_id = models.CharField(max_length=80,
                                        blank=True, default="", unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    user_identifier = models.CharField(max_length=120,  blank=True,
+    user_identifier = models.CharField(max_length=120, blank=True,
                                        default="")
     user_id_type = models.CharField(max_length=3,
-                                    default="CIN",  blank=True,
+                                    default="CIN", blank=True,
                                     choices=(("CIN", "CIN"),))
     user_id_hash = models.CharField(max_length=64,
                                     blank=True,

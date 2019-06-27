@@ -6,7 +6,7 @@
         {% if not error %}
             <form id="authorizationForm" method="post">
                 <h3 class="block-center-heading">{% trans "Do you Authorize" %} {{ application.name }} {% trans "to access your personal health information?"%}</h3>
-                
+
                 <p>This includes, but is not limited to:</p>
                 <ul>
                 <li>{% trans "Read-Only Access" %}</li>
@@ -16,14 +16,14 @@
                 <li>Sexually transmitted disease information</li>
                 <li>Reproductive health information, including abortion information</li>
                 <li>Alcohol and substance abuse treatment information </li>
-                
+
                 <li>Conditions and Diagnosis</li>
                 <li>Medications</li>
-            
+
                 </ul>
                   <h3 class="block-center-heading">{% trans "And do you also agree to the "%}<a href="#HPA">HIXNY Participation Agreement?</a></h3>
-                  
-                <p>The provisions in the <a href="#HPA">HIXNY Participation Agreement</a> include that you acknowle and agreeing that:</p>
+
+                <p>The provisions in the <a href="#HPA">HIXNY Participation Agreement</a> include that you acknowledge and agree that:</p>
                 <ul>
                 <li>This service is provided as convenience.</li>
                 <li>You are trusting {{ application.name }} to access your personal health information.</li>
@@ -34,15 +34,15 @@
                 <li>HIXNY may remove access at any time at its sole discretion.</li>
 
                 </ul>
-                
+
                 <div class="control-group">
                     <div class="controls">
                         <input type="submit" class="btn btn-large" value="Cancel"/>
                         <input type="submit" class="btn btn-large btn-primary" name="allow" value="Approve"/>
                     </div>
-                </div> 
-                
-                
+                </div>
+
+
                 {% csrf_token %}
 
                 {% for field in form %}
@@ -118,7 +118,7 @@
    Notwithstanding the foregoing, you understand and agree that Hixny cannot return or destroy Patient Data contributed by you that has been accessed by any Participants.</p><h3>Acceptance of Agreement</h3><p>I hereby acknowledge
    that I have read the foregoing Patient Participation Agreement for the Hixny For You and agree to its terms and conditions.</p>
                 <p>{% trans "Application requires following permissions" %}</p>
-                
+
                 <ul>
                     <li>Read Only</li>
                 </ul>
@@ -138,7 +138,7 @@
             <h2>Error: {{ error.error }}</h2>
             <p>{{ error.description }}</p>
         {% endif %}
-        
+
         <center>
         <a href="#authorizationForm"><input type="submit" class="btn btn-large btn-default" name="allow" value="Back to the top"/></a>
         </center>

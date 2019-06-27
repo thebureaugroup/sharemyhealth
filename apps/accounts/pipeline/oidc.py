@@ -21,7 +21,7 @@ def save_profile(backend, user, response, *args, **kwargs):
                 profile.subject = payload['sub']
 
             if 'nickname' in payload:
-                profile.nicname = payload['nickname']
+                profile.nickname = payload['nickname']
 
             if 'phone_number' in payload:
                 profile.mobile_phone_number = payload['phone_number']
@@ -42,7 +42,8 @@ def save_profile(backend, user, response, *args, **kwargs):
             if 'ial' in payload:
                 profile.identity_assurance_level = payload['ial']
 
-            if 'picture' in payload:
+            if ('picture' in payload and 'None' not in payload['picture']
+                    and 'no-img' not in payload['picture']):
                 profile.picture_url = payload['picture']
 
             profile.most_recent_id_token_payload = json.dumps(

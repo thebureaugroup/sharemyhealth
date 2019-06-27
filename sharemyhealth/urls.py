@@ -18,6 +18,7 @@ from django.urls import path
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from apps.home.views import authenticated_home
+from . import signals  # noqa
 
 urlpatterns = [
     path('admin/', admin.site.urls),

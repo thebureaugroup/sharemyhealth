@@ -21,7 +21,7 @@ def get_patient_fhir_content(request):
         if not hie_data.get('error'):
             hp.__dict__.update(**hie_data)
             hp.save()
-    return JsonResponse(json.loads(hp.fhir_content))
+    return JsonResponse(json.loads(hp.fhir_content or '{}'))
 
 
 @require_GET

@@ -202,7 +202,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'apps.accounts.pipeline.oidc.save_profile',
-    'social_core.pipeline.debug.debug'
+    'social_core.pipeline.debug.debug',
 )
 
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY = env(

@@ -40,8 +40,8 @@ class HIEProfile(models.Model):
     @property
     def consent_to_share_data(self):
         if self.user_accept is True:
-            return '1'
-        return '0'
+            return 1
+        return 0
 
     @property
     def subject(self):

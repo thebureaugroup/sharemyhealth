@@ -66,8 +66,12 @@ def get_authorization(request):
         return HttpResponseRedirect(reverse('home'))
     access_token = auth_response['access_token']
 
-    search_data = hixny_requests.patient_search_enroll(access_token, up)
-    if search_data.get('error'):
+    search_data = hixny_requests.patient_search(access_token, up)
+    if search_data.get('mrn'):
+        # member found, already has portal account
+        hp.mrn = search_data['mrn']
+        hp.save()
+    elif search_data.get('error'):
         error_message = "HIE Responded: %(error)s" % search_data
         messages.error(request, error_message)
         return HttpResponseRedirect(reverse('home'))
@@ -101,10 +105,10 @@ def approve_authorization(request):
         return HttpResponseRedirect(reverse('home'))
     access_token = auth_response['access_token']
 
-    # activate user
-    staged_user_data = hixny_requests.activate_staged_user(access_token, hp, up)
-    if staged_user_data['status'] == 'success':
-        hp.mrn = staged_user_data['mrn']
+    # activate member
+    activated_member_data = hixny_requests.activate_staged_user(access_token, hp, up)
+    if activated_member_data['status'] == 'success':
+        hp.mrn = activated_member_data['mrn']
         hp.save()
 
     # if the consumer directive checks out, get the clinical data and store it
