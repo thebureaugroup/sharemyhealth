@@ -1,3 +1,4 @@
+import re
 from lxml import etree
 import requests
 from requests.auth import HTTPBasicAuth
@@ -7,7 +8,8 @@ from .models import HIEProfile
 from ..accounts.models import UserProfile
 
 NAMESPACES = {
-    'hl7': 'urn:hl7-org:v3',
+    'hl7': "urn:hl7-org:v3",
+    'enrollment': "http://www.intersystems.com/hs/portal/enrollment",
 }
 
 
@@ -48,7 +50,7 @@ def acquire_access_token():
     }
 
 
-def patient_search_enroll(access_token, user_profile):
+def patient_search(access_token, user_profile):
     """search for a patient with the given profile; if found, return """
     patient_search_xml = """
         <PatientSearchPayLoad>
@@ -76,6 +78,8 @@ def patient_search_enroll(access_token, user_profile):
         user_profile.user.first_name,
         settings.HIE_WORKBENCH_USERNAME,
     )
+    print(patient_search_xml)
+
     response = requests.post(
         settings.HIE_PHRREGISTER_API_URI,
         verify=False,
@@ -90,22 +94,30 @@ def patient_search_enroll(access_token, user_profile):
 
     result = {}
     for element in response_xml:
-        if element.tag == "{urn:hl7-org:v3}Notice":
+        if element.tag == "{%(hl7)s}Notice" % NAMESPACES:
             result['error'] = element.text
         for e in element.getchildren():
-            if e.tag == "{urn:hl7-org:v3}Status":
+            if e.tag == "{%(hl7)s}Status" % NAMESPACES:
                 result['status'] = e.text
-            if e.tag == "{urn:hl7-org:v3}Notice":
+            if e.tag == "{%(hl7)s}Notice" % NAMESPACES:
                 result['notice'] = e.text
-            if e.tag == "{urn:hl7-org:v3}TERMSACCEPTED":
+                if "ERROR #5001" in result['notice']:
+                    match_data = re.search(r'MRN[:=] ?([0-9]+)\b', result['notice'])
+                    if match_data:
+                        result['mrn'] = match_data.group(1)
+            if e.tag == "{%(hl7)s}TERMSACCEPTED" % NAMESPACES:
                 result['terms_accepted'] = e.text
-            if e.tag == "{http://www.intersystems.com/hs/portal/enrollment}TermsString":
-                result['terms_string'] = e.text
-            if e.tag == "{urn:hl7-org:v3}StageUserPassword":
+            if e.tag == "{%(enrollment)s}TermsString" % NAMESPACES:
+                # the content of TermsString is html
+                e.tag = 'TermsString'  # get rid of namespaces
+                terms_string = ''.join([etree.tounicode(ch, method='xml') for ch in e])
+                result['terms_string'] = terms_string
+            if e.tag == "{%(hl7)s}StageUserPassword" % NAMESPACES:
                 result['stageuser_password'] = e.text
-            if e.tag == "{urn:hl7-org:v3}StageUserToken":
+            if e.tag == "{%(hl7)s}StageUserToken" % NAMESPACES:
                 result['stageuser_token'] = e.text
 
+    print(result)
     return result
 
 
@@ -118,7 +130,7 @@ def activate_staged_user(access_token, hie_profile, user_profile):
             <DOB>%s</DOB>
             <TOKEN>%s</TOKEN>
             <PASSWORD>%s</PASSWORD>
-            <TERMSACCEPTED>%s</TERMSACCEPTED>
+            <TERMSACCEPTED>%d</TERMSACCEPTED>
         </ACTIVATESTAGEDUSERPAYLOAD>
         """ % (
         user_profile.birthdate_intersystems,
@@ -126,6 +138,7 @@ def activate_staged_user(access_token, hie_profile, user_profile):
         hie_profile.stageuser_password,
         hie_profile.consent_to_share_data,
     )
+    print(activate_xml)
 
     response = requests.post(
         settings.HIE_ACTIVATESTAGEDUSER_API_URI,
@@ -152,37 +165,43 @@ def consumer_directive(access_token, hie_profile, user_profile):
     """post to the consumer directive API to determine the given member's consumer directive;
     returns data containing the status and any notice.
     """
-    consumer_directive_xml = """
-        <CONSUMERDIRECTIVEPAYLOAD>
-            <MRN>%s</MRN>
-            <DOB>%s</DOB>
-            <DATAREQUESTOR>%s</DATAREQUESTOR>
-            <CONSENTTOSHAREDATA>%s</CONSENTTOSHAREDATA>
-        </CONSUMERDIRECTIVEPAYLOAD>
-        """ % (
-        hie_profile.mrn,
-        user_profile.birthdate_intersystems,
-        hie_profile.data_requestor,
-        hie_profile.consent_to_share_data,
-    )
-    response = requests.post(
-        settings.HIE_CONSUMERDIRECTIVE_API_URI,
-        verify=False,
-        headers={
-            'Content-Type': 'application/xml',
-            'Authorization': "Bearer %s" % (access_token)
-        },
-        data=consumer_directive_xml,
-    )
-    response_xml = etree.XML(response.content)
-    print(etree.tounicode(response_xml, pretty_print=True))
+    if not hie_profile.consent_to_share_data:
+        result = {'status': 'ERROR', 'notice': 'Member has not consented to share data.'}
+    else:
+        consumer_directive_xml = """
+            <CONSUMERDIRECTIVEPAYLOAD>
+                <MRN>%s</MRN>
+                <DOB>%s</DOB>
+                <DATAREQUESTOR>%s</DATAREQUESTOR>
+                <CONSENTTOSHAREDATA>%d</CONSENTTOSHAREDATA>
+            </CONSUMERDIRECTIVEPAYLOAD>
+            """ % (
+            hie_profile.mrn,
+            user_profile.birthdate_intersystems,
+            hie_profile.data_requestor,
+            hie_profile.consent_to_share_data,
+        )
+        print(consumer_directive_xml)
 
-    return {
-        'status': ''.join(
-            response_xml.xpath("hl7:Status/text()", namespaces=NAMESPACES)),
-        'notice': ''.join(
-            response_xml.xpath("hl7:Notice/text()", namespaces=NAMESPACES)),
-    }
+        response = requests.post(
+            settings.HIE_CONSUMERDIRECTIVE_API_URI,
+            verify=False,
+            headers={
+                'Content-Type': 'application/xml',
+                'Authorization': "Bearer %s" % (access_token)
+            },
+            data=consumer_directive_xml,
+        )
+        response_xml = etree.XML(response.content)
+        print(etree.tounicode(response_xml, pretty_print=True))
+
+        result = {
+            'status': ''.join(response_xml.xpath("hl7:Status/text()", namespaces=NAMESPACES)),
+            'notice': ''.join(response_xml.xpath("hl7:Notice/text()", namespaces=NAMESPACES)),
+        }
+
+    print(result)
+    return result
 
 
 def get_clinical_document(access_token, hie_profile):
@@ -197,6 +216,8 @@ def get_clinical_document(access_token, hie_profile):
         hie_profile.mrn,
         hie_profile.data_requestor,
     )
+    print(request_xml)
+
     response = requests.post(
         settings.HIE_GETDOCUMENT_API_URI,
         verify=False,
@@ -207,6 +228,8 @@ def get_clinical_document(access_token, hie_profile):
         data=request_xml,
     )
     response_xml = etree.XML(response.content)
+    print(response_xml)
+
     cda_element = response_xml.find("{%(hl7)s}ClinicalDocument" % NAMESPACES)
     if cda_element is not None:
         cda_content = etree.tounicode(cda_element)
@@ -251,6 +274,33 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
         hie_profile, created = HIEProfile.objects.get(user=user)
     if user_profile is None:
         user_profile, created = UserProfile.objects.get(user=user)
+
+    # if the member hasn't been enrolled (no HIEProfile.mrn), try to enroll
+    if not hie_profile.mrn:
+        # try to find the member
+        search_data = patient_search(access_token, user_profile)
+        if search_data.get('mrn'):
+            # member found, already has portal account
+            hie_profile.mrn = search_data['mrn']
+            hie_profile.save()
+
+        elif not (search_data.get('error')
+                  or search_data.get('status') == 'ERROR' and search_data.get('notice')):
+            # member found
+            hie_profile.terms_accepted = search_data.get('terms_accepted')
+            hie_profile.terms_string = search_data.get('terms_string')
+            hie_profile.stageuser_password = search_data.get('stageuser_password')
+            hie_profile.stageuser_token = search_data.get('stageuser_token')
+            hie_profile.save()
+
+            # try to activate the member
+            activated_member_data = activate_staged_user(access_token, hie_profile, user_profile)
+            print('activated_member_data:', activated_member_data)
+            if activated_member_data['status'] == 'success' and activated_member_data.get('mrn'):
+                hie_profile.mrn = activated_member_data['mrn']
+                hie_profile.save()
+
+            print({k: v for k, v in hie_profile.__dict__.items() if k[0] != '_'})
 
     # if the consumer directive checks out, get the clinical data and store it
     directive = consumer_directive(access_token, hie_profile, user_profile)
