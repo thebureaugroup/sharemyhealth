@@ -38,6 +38,11 @@ class HIEProfile(models.Model):
         return display
 
     @property
+    def flag_dont_connect(self):
+        boundary = '0' * 64  # a zero-filled string the max length of the mrn
+        return self.mrn <= boundary  # don't connect if mrn <= boundary
+
+    @property
     def consent_to_share_data(self):
         if self.user_accept is True:
             return 1
