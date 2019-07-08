@@ -178,6 +178,17 @@ AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', 'change-me')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', 'change-me')
 
 
+# OAUTH SETTINGS
+OAUTH2_PROVIDER = {
+    'SCOPES': {"read": "Read scope",
+               "patient/*.read": "Permission to read any resource for the current patient",
+               "profile": "read the user's profile"},
+    'DEFAULT_SCOPES': ['patient/*.read', 'profile'],
+    'REQUEST_APPROVAL_PROMPT': 'auto',
+    'ACCESS_TOKEN_EXPIRE_SECONDS':  int(env('ACCESS_TOKEN_EXPIRE_SECONDS', 315360000))
+}
+
+
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
@@ -222,7 +233,7 @@ DATE_INPUT_FORMATS = ['%Y-%m-%d']  # , '%d-%m-%Y']
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 
-EXTERNAL_AUTH_NAME = "Google"
+EXTERNAL_AUTH_NAME = "OpenID Connect"
 
 APPLICATION_TITLE = env('DJANGO_APPLICATION_TITLE',
                         'HIXNY API')
