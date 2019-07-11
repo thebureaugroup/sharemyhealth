@@ -13,6 +13,72 @@ NAMESPACES = {
 }
 
 
+def fetch_patient_data(user, hie_profile=None, user_profile=None):
+    """do what we need to do to fetch patient data from HIXNY, if possible, for the given user.
+    returns values that can be used to update the user's HIEProfile
+    """
+    result = {}
+
+    if hie_profile is None:
+        hie_profile, created = HIEProfile.objects.get(user=user)
+    if user_profile is None:
+        user_profile, created = UserProfile.objects.get(user=user)
+
+    if hie_profile.flag_dont_connect:
+        result['cda_content'] = hie_profile.cda_content
+        result['fhir_content'] = hie_profile.fhir_content
+    else:
+        # acquire an access token from the HIXNY server
+        auth_response = acquire_access_token()
+        if auth_response['error_message'] is not None:
+            result['error'] = auth_response['error_message']
+            return result
+        access_token = auth_response['access_token']
+
+        # if the member hasn't been enrolled (no HIEProfile.mrn), try to enroll
+        if not hie_profile.mrn:
+            # try to find the member
+            search_data = patient_search(access_token, user_profile)
+            if search_data.get('mrn'):
+                # member found, already has portal account
+                hie_profile.mrn = search_data['mrn']
+                hie_profile.save()
+
+            elif not (search_data.get('error')
+                      or search_data.get('status') == 'ERROR' and search_data.get('notice')):
+                # member found
+                hie_profile.terms_accepted = search_data.get('terms_accepted')
+                hie_profile.terms_string = search_data.get('terms_string')
+                hie_profile.stageuser_password = search_data.get('stageuser_password')
+                hie_profile.stageuser_token = search_data.get('stageuser_token')
+                hie_profile.save()
+
+                # try to stage/activate the member
+                activated_member_data = activate_staged_user(access_token, hie_profile, user_profile)
+                print('activated_member_data:', activated_member_data)
+                if activated_member_data['status'] == 'success' and activated_member_data.get('mrn'):
+                    hie_profile.mrn = activated_member_data['mrn']
+                    hie_profile.save()
+
+                print({k: v for k, v in hie_profile.__dict__.items() if k[0] != '_'})
+
+        # if the consumer directive checks out, get the clinical data and store it
+        directive = consumer_directive(access_token, hie_profile, user_profile)
+        if directive['status'] == "OK" and directive['notice'] in (
+                "Document has been prepared.",
+                "Document already exists.",
+        ):
+            document_data = get_clinical_document(access_token, hie_profile)
+            result['cda_content'] = document_data['cda_content']
+            result['fhir_content'] = document_data['fhir_content']
+        else:
+            result['error'] = "Clinical data could not be loaded."
+            if settings.DEBUG:
+                result['error'] += " %r" % directive
+
+    return result
+
+
 def acquire_access_token():
     """establish a connection to the hixny service;
     returns JSON containing an access token on successful connection
@@ -117,7 +183,6 @@ def patient_search(access_token, user_profile):
             if e.tag == "{%(hl7)s}StageUserToken" % NAMESPACES:
                 result['stageuser_token'] = e.text
 
-    print(result)
     return result
 
 
@@ -149,12 +214,19 @@ def activate_staged_user(access_token, hie_profile, user_profile):
         },
         data=activate_xml)
 
+    response_content = response.content.decode('utf-8')
     response_xml = etree.XML(response.content)
     print(etree.tounicode(response_xml, pretty_print=True))
 
-    mrn_element = response_xml.find("{%(hl7)s}ActivatedUserMrn" % NAMESPACES)
-    if mrn_element and mrn_element.text:
-        result = {'status': 'success', 'mrn': mrn_element.text}
+    mrn_elements = response_xml.xpath("//hl7:ActivatedUserMrn", namespaces=NAMESPACES)
+    mrn_match = re.search(r"ActivatedUserMrn>(\d+)<", response_content)
+    if len(mrn_elements) > 0:
+        mrn_element = mrn_elements[0]
+        print('mrn_element =', etree.tounicode(mrn_element))
+        result = {'status': 'success', 'mrn': etree.tounicode(mrn_element, method='text', with_tail=False).strip()}
+    elif mrn_match is not None:
+        print('mrn_match =', mrn_match)
+        result = {'status': 'success', 'mrn': mrn_match.group(1)}
     else:
         result = {'status': 'failure', 'mrn': None}
 
@@ -208,7 +280,6 @@ def consumer_directive(access_token, hie_profile, user_profile):
             'notice': ''.join(response_xml.xpath("hl7:Notice/text()", namespaces=NAMESPACES)),
         }
 
-    print(result)
     return result
 
 
@@ -264,68 +335,3 @@ def cda2fhir(cda_content):
     fhir_content = response.content
     return fhir_content
 
-
-def fetch_patient_data(user, hie_profile=None, user_profile=None):
-    """do what we need to do to fetch patient data from HIXNY, if possible, for the given user.
-    returns values that can be used to update the user's HIEProfile
-    """
-    result = {}
-
-    if hie_profile is None:
-        hie_profile, created = HIEProfile.objects.get(user=user)
-    if user_profile is None:
-        user_profile, created = UserProfile.objects.get(user=user)
-
-    if hie_profile.flag_dont_connect:
-        result['cda_content'] = hie_profile.cda_content
-        result['fhir_content'] = hie_profile.fhir_content
-    else:
-        # acquire an access token from the HIXNY server
-        auth_response = acquire_access_token()
-        if auth_response['error_message'] is not None:
-            result['error'] = auth_response['error_message']
-            return result
-        access_token = auth_response['access_token']
-
-        # if the member hasn't been enrolled (no HIEProfile.mrn), try to enroll
-        if not hie_profile.mrn:
-            # try to find the member
-            search_data = patient_search(access_token, user_profile)
-            if search_data.get('mrn'):
-                # member found, already has portal account
-                hie_profile.mrn = search_data['mrn']
-                hie_profile.save()
-
-            elif not (search_data.get('error')
-                      or search_data.get('status') == 'ERROR' and search_data.get('notice')):
-                # member found
-                hie_profile.terms_accepted = search_data.get('terms_accepted')
-                hie_profile.terms_string = search_data.get('terms_string')
-                hie_profile.stageuser_password = search_data.get('stageuser_password')
-                hie_profile.stageuser_token = search_data.get('stageuser_token')
-                hie_profile.save()
-
-                # try to activate the member
-                activated_member_data = activate_staged_user(access_token, hie_profile, user_profile)
-                print('activated_member_data:', activated_member_data)
-                if activated_member_data['status'] == 'success' and activated_member_data.get('mrn'):
-                    hie_profile.mrn = activated_member_data['mrn']
-                    hie_profile.save()
-
-                print({k: v for k, v in hie_profile.__dict__.items() if k[0] != '_'})
-
-        # if the consumer directive checks out, get the clinical data and store it
-        directive = consumer_directive(access_token, hie_profile, user_profile)
-        if directive['status'] == "OK" and directive['notice'] in (
-                "Document has been prepared.",
-                "Document already exists.",
-        ):
-            document_data = get_clinical_document(access_token, hie_profile)
-            result['cda_content'] = document_data['cda_content']
-            result['fhir_content'] = document_data['fhir_content']
-        else:
-            result['error'] = "Clinical data could not be loaded."
-            if settings.DEBUG:
-                result['error'] += " %r" % directive
-
-    return result
