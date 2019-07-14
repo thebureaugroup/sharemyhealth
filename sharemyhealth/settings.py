@@ -180,6 +180,7 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', 'change-me')
 
 # OAUTH SETTINGS
 OAUTH2_PROVIDER = {
+    'OAUTH2_VALIDATOR_CLASS': 'sharemyhealth.oauth2_validators.SingleAccessTokenValidator',
     'SCOPES': {"read": "Read scope",
                "patient/*.read": "Permission to read any resource for the current patient",
                "profile": "read the user's profile"},
