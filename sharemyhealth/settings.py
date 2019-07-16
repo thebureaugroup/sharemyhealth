@@ -366,4 +366,4 @@ HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 CDA2FHIR_SERVICE_URL = env(
     'CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = env('SESSION_COOKIE_AGE', int(10 * 60))
+SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(10 * 60)))
