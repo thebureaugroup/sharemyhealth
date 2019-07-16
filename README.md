@@ -1,4 +1,4 @@
-# ShareMyHealth
+# ShareMyHealth - An OAuth2 Provider for Health Care
 
 A consumer-directed health information exchange.
 
