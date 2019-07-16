@@ -236,11 +236,16 @@ LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 
 EXTERNAL_AUTH_NAME = "OpenID Connect"
 
+TOP_LEFT_TITLE = env('DJANGO_TOP_LEFT_TITLE',
+                     'Share My Health')
+
 APPLICATION_TITLE = env('DJANGO_APPLICATION_TITLE',
                         'HIXNY API')
 ORGANIZATION_TITLE = env(
     'DJANGO_ORGANIZATION_TITLE',
     'Alliance for Better Health')
+
+KILLER_APP_URI = env('KILLER_APP_URI', 'https://app.sharemy.health')
 ORGANIZATION_URI = env('DJANGO_ORGANIZATION_URI', 'https://abhealth.us')
 POLICY_URI = env(
     'DJANGO_POLICY_URI',
@@ -257,9 +262,9 @@ USER_DOCS_URI = "https://abhealth.us"
 USER_DOCS_TITLE = "User Documentation"
 USER_DOCS = "User Docs"
 # LINKS TO DOCS
-DEVELOPER_DOCS_URI = "https:/abhealth.us"
-DEVELOPER_DOCS_TITLE = "Developer Documentation"
-DEVELOPER_DOCS = "Developer Docs"
+DEVELOPER_DOCS_URI = "https:/github.com/transparenthealth/sharemyhealth"
+DEVELOPER_DOCS_TITLE = "Open Source"
+DEVELOPER_DOCS = "Open Source"
 DEFAULT_DISCLOSURE_TEXT = """
     This system may be monitored, recorded and
     subject to audit. Improper use of this system or
@@ -335,7 +340,9 @@ SETTINGS_EXPORT = [
     'CALL_MEMBER',
     'CALL_MEMBER_PLURAL',
     'CALL_ORGANIZATION',
-    'CALL_ORGANIZATION_PLURAL'
+    'CALL_ORGANIZATION_PLURAL',
+    'TOP_LEFT_TITLE',
+    'KILLER_APP_URI'
 ]
 
 
@@ -358,3 +365,5 @@ HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 # Should be operated behind a firewall and in ssl/https in production.
 CDA2FHIR_SERVICE_URL = env(
     'CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = env('SESSION_COOKIE_AGE', int(10 * 60))
