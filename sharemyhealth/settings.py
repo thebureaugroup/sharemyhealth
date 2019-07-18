@@ -369,5 +369,9 @@ HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 # Should be operated behind a firewall and in ssl/https in production.
 CDA2FHIR_SERVICE_URL = env(
     'CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+
+# Expire when browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Expire in 10 munutes by default.
 SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(10 * 60)))
