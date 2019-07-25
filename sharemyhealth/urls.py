@@ -30,7 +30,8 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^home/', include('apps.home.urls')),
-    url(r"^o/authorize/$", bind_to_patient(views.AuthorizationView.as_view()), name="authorize"),
+    url(r"^o/authorize/$",
+        bind_to_patient(views.AuthorizationView.as_view()), name="authorize"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^.well-known/', include('apps.wellknown.urls')),
     url(r'^api/', include('apps.api.urls')),
@@ -40,7 +41,8 @@ urlpatterns = [
     url(r'^hixny/', include('apps.hie.urls')),
     url(r'^testclient/', include('apps.testclient.urls')),
 
-    path('data-source-agreement/', TemplateView.as_view(template_name='data-source-agreement.html'), name='data-source-agreement'),
+    path('data-source-agreement/', TemplateView.as_view(
+        template_name='data-source-agreement.html'), name='data-source-agreement'),
     path('', authenticated_home, name='home'),
-    
+
 ]

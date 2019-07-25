@@ -186,7 +186,7 @@ OAUTH2_PROVIDER = {
                "profile": "read the user's profile"},
     'DEFAULT_SCOPES': ['patient/*.read', 'profile'],
     'REQUEST_APPROVAL_PROMPT': 'auto',
-    'ACCESS_TOKEN_EXPIRE_SECONDS':  int(env('ACCESS_TOKEN_EXPIRE_SECONDS', 315360000))
+    'ACCESS_TOKEN_EXPIRE_SECONDS': int(env('ACCESS_TOKEN_EXPIRE_SECONDS', 315360000))
 }
 
 
@@ -246,7 +246,8 @@ POLICY_URI = env(
     'DJANGO_POLICY_URI',
     'https://abhealth.us')
 POLICY_TITLE = env('DJANGO_POLICY_TITLE', 'Privacy Policy')
-TOS_URI = env('DJANGO_TOS_URI', 'http://sharemy.health/terms-of-service1.0.html')
+TOS_URI = env('DJANGO_TOS_URI',
+              'http://sharemy.health/terms-of-service1.0.html')
 TOS_TITLE = env('DJANGO_TOS_TITLE', 'Terms of Service')
 TAG_LINE_1 = env('DJANGO_TAG_LINE_1', 'Share your health data')
 TAG_LINE_2 = env('DJANGO_TAG_LINE_2',
@@ -299,38 +300,62 @@ DEFAULT_FHIR_SERVER = "http://fhir-test.sharemy.health:8080/fhir/baseDstu3/"
 DEFAULT_OUT_FHIR_SERVER = HOSTNAME_URL + "/fhir/baseDstu3"
 
 
-FHIR_RESOURCES_SUPPORTED = ('Patient', 'Observation', 'Condition', 'Medication',
-                            'MedicationStatement', 'MedicationOrder',
-                            'AllergyIntolerance', 'DiagnosticReport',
-                            'Procedure', 'CarePlan', 'Immunization',
-                            'Device', 'Goal', 'Coverage', 'ExplanationOfBenefit')
+FHIR_RESOURCES_SUPPORTED = (
+    'Patient',
+    'Observation',
+    'Condition',
+    'Medication',
+    'MedicationStatement',
+    'MedicationOrder',
+    'AllergyIntolerance',
+    'DiagnosticReport',
+    'Procedure',
+    'CarePlan',
+    'Immunization',
+    'Device',
+    'Goal',
+    'Coverage',
+    'ExplanationOfBenefit')
 
 DEFAULT_SAMPLE_FHIR_ID = "472"
 
-DATA_SOURCE_AGREEMENT_TITLE = env('DATA_SOURCE_AGREEMENT_TITLE', 'HIXNY Participation Agreement')
+DATA_SOURCE_AGREEMENT_TITLE = env(
+    'DATA_SOURCE_AGREEMENT_TITLE', 'HIXNY Participation Agreement')
 DATA_SOURCE_TITLE = env('DATA_SOURCE_TITLE', 'HIXNY')
-PROTECTED_RESOURCE_TITLE = env('PROTECTED_RESOURCE_TITLE', 'Read-only access to personal health information')
+PROTECTED_RESOURCE_TITLE = env(
+    'PROTECTED_RESOURCE_TITLE',
+    'Read-only access to personal health information')
 
 # List of "hot button" data items to be disclosed.
-SPECIFIC_DATA_ITEMS_IN_RESOURCES = ['Conditions and Diagnosis',
-                               'Medications',
-                               'HIV-related information', 'Mental health information',
-                               'Genetic testing information', 'Sexually transmitted disease information',
-                               'Reproductive health information, including abortion information', 
-                               'Alcohol and substance abuse treatment information'
-                               ]
+SPECIFIC_DATA_ITEMS_IN_RESOURCES = [
+    'Conditions and Diagnosis',
+    'Medications',
+    'HIV-related information',
+    'Mental health information',
+    'Genetic testing information',
+    'Sexually transmitted disease information',
+    'Reproductive health information, including abortion information',
+    'Alcohol and substance abuse treatment information']
 
 SPECIFIC_PERMISSIONS = [PROTECTED_RESOURCE_TITLE, ]
 
 
-SPECIFIC_OTHER_TERMS = ['Connect this application at your own discretion. Only approve access to applications you trust.',
-                'Agree that %s is not responsible for any misuse of personal health information by the application you are approving.' % (DATA_SOURCE_TITLE),
-                'Understand once information is shared in cannot be unshared. %s is unable to detract information shared with this application.' % (DATA_SOURCE_TITLE),
-                'Understand that future data sharing with this application must be explicitly revoked by you by returning to this website.',
-                mark_safe("""Understand that this application is likely not covered under <a target="_blamk" href="https://www.hhs.gov/hipaa/index.html">HIPAA</a>.
-                Consumer protections afforded under HIPAA do not necessarily apply to this application or the organization behind the application.""")
-                ]
-
+SPECIFIC_OTHER_TERMS = [
+    """Connect this application at your own discretion.
+    Only approve access to applications you trust.""",
+    """Agree that %s is not responsible for any misuse of personal
+       health information by the application you are
+       approving.""" % (DATA_SOURCE_TITLE),
+    """Understand once information is shared in cannot be unshared.
+       %s is unable to detract information shared with this
+       application.""" % (DATA_SOURCE_TITLE),
+    """Understand that future data sharing with this application must
+       be explicitly revoked by you by returning to this website.""",
+    mark_safe("""Understand that this application is likely not covered under
+                 <a target="_blamk" href="https://www.hhs.gov/hipaa/index.html">HIPAA</a>.
+                Consumer protections afforded under HIPAA do not necessarily apply to this
+                application or the organization behind the application."""),
+]
 
 
 SETTINGS_EXPORT = [
@@ -369,7 +394,8 @@ SETTINGS_EXPORT = [
 
 
 # These settings are for connection to InterSystems APIs for Health Information Exchanges
-# Data is received as CCDA and converted to FHIR.  You don't need this information
+# Data is received as CCDA and converted to FHIR.  You don't need this
+# information
 
 
 HIE_TOKEN_API_URI = env('HIE_TOKEN_API_URI',
@@ -387,11 +413,10 @@ HIE_WORKBENCH_PASSWORD = env('HIE_WORKBENCH_PASSWORD', '')
 HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 
 
-
-
 # Should be operated behind a firewall and in ssl/https in production.
 CDA2FHIR_SERVICE_URL = env(
-    'CDA2FHIR_SERVICE', 'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+    'CDA2FHIR_SERVICE',
+    'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
