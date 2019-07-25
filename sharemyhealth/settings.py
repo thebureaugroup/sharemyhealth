@@ -17,7 +17,6 @@ from getenv import env
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,6 +30,10 @@ SECRET_KEY = '@+ttixefm9-bu1eknb4k^5dj(f1z0^97b$zan9akdr^4s8cc54'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
+if DEBUG:
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 ALLOWED_HOSTS = ['*', ]
 
@@ -181,6 +184,7 @@ AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', 'change-me')
 
 # OAUTH SETTINGS
 OAUTH2_PROVIDER = {
+    'OAUTH2_VALIDATOR_CLASS': 'sharemyhealth.oauth2_validators.SingleAccessTokenValidator',
     'SCOPES': {"read": "Read scope",
                "patient/*.read": "Permission to read any resource for the current patient",
                "profile": "read the user's profile"},
@@ -191,8 +195,6 @@ OAUTH2_PROVIDER = {
 
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOpenId',
-    'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
     'social_core.backends.instagram.InstagramOAuth2',
     'apps.verifymyidentity.authentication.SocialCoreOpenIdConnect',
@@ -214,7 +216,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'apps.accounts.pipeline.oidc.save_profile',
-    'social_core.pipeline.debug.debug'
+    'social_core.pipeline.debug.debug',
 )
 
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY = env(
@@ -229,6 +231,10 @@ SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT',
     'http://verifymyidentity:8000')
 
+
+REMOTE_LOGOUT_ENDPOINT = "%s/api/v1/remote-logout" % (
+    SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT)
+
 DATE_INPUT_FORMATS = ['%Y-%m-%d']  # , '%d-%m-%Y']
 
 LOGIN_REDIRECT_URL = 'home'
@@ -236,11 +242,16 @@ LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 
 EXTERNAL_AUTH_NAME = "OpenID Connect"
 
+TOP_LEFT_TITLE = env('DJANGO_TOP_LEFT_TITLE',
+                     'Share My Health')
+
 APPLICATION_TITLE = env('DJANGO_APPLICATION_TITLE',
                         'HIXNY API')
 ORGANIZATION_TITLE = env(
     'DJANGO_ORGANIZATION_TITLE',
     'Alliance for Better Health')
+
+KILLER_APP_URI = env('KILLER_APP_URI', 'https://app.sharemy.health')
 ORGANIZATION_URI = env('DJANGO_ORGANIZATION_URI', 'https://abhealth.us')
 POLICY_URI = env(
     'DJANGO_POLICY_URI',
@@ -258,9 +269,9 @@ USER_DOCS_URI = "https://abhealth.us"
 USER_DOCS_TITLE = "User Documentation"
 USER_DOCS = "User Docs"
 # LINKS TO DOCS
-DEVELOPER_DOCS_URI = "https:/abhealth.us"
-DEVELOPER_DOCS_TITLE = "Developer Documentation"
-DEVELOPER_DOCS = "Developer Docs"
+DEVELOPER_DOCS_URI = "https:/github.com/transparenthealth/sharemyhealth"
+DEVELOPER_DOCS_TITLE = "Open Source"
+DEVELOPER_DOCS = "Open Source"
 DEFAULT_DISCLOSURE_TEXT = """
     This system may be monitored, recorded and
     subject to audit. Improper use of this system or
@@ -360,6 +371,7 @@ SPECIFIC_OTHER_TERMS = [
 
 SETTINGS_EXPORT = [
     'DEBUG',
+    'HOSTNAME_URL',
     'ALLOWED_HOSTS',
     'APPLICATION_TITLE',
     'STATIC_URL',
@@ -389,7 +401,9 @@ SETTINGS_EXPORT = [
     'PROTECTED_RESOURCE_TITLE',
     'SPECIFIC_DATA_ITEMS_IN_RESOURCES',
     'SPECIFIC_PERMISSIONS',
-    'SPECIFIC_OTHER_TERMS'
+    'SPECIFIC_OTHER_TERMS',
+    'TOP_LEFT_TITLE',
+    'KILLER_APP_URI',
 ]
 
 
@@ -414,9 +428,11 @@ HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 
 
 # Should be operated behind a firewall and in ssl/https in production.
-CDA2FHIR_SERVICE_URL = env(
-    'CDA2FHIR_SERVICE',
-    'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+CDA2FHIR_SERVICE_URL = env('CDA2FHIR_SERVICE',
+                           'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Expire in 30 minutes
 SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
+
+# Expire when browser is closed.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

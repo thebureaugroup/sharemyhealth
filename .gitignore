@@ -107,3 +107,4 @@ venv.bak/
 sitestatic/.DS_Store
 sitestatic/.DS_Store*
 *.komodoproject
+.DS_Store

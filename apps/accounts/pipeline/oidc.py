@@ -17,11 +17,17 @@ def save_profile(backend, user, response, *args, **kwargs):
             id_token = response.get('id_token')
             parsed_id_token = JWT().unpack(id_token)
             payload = parsed_id_token.payload()
+            if 'given_name' in payload:
+                profile.user.first_name = payload['given_name']
+                
+            if 'family_name' in payload:
+                profile.user.last_name = payload['family_name']          
+            
             if 'sub' in payload:
                 profile.subject = payload['sub']
 
             if 'nickname' in payload:
-                profile.nicname = payload['nickname']
+                profile.nickname = payload['nickname']
 
             if 'phone_number' in payload:
                 profile.mobile_phone_number = payload['phone_number']
@@ -42,10 +48,12 @@ def save_profile(backend, user, response, *args, **kwargs):
             if 'ial' in payload:
                 profile.identity_assurance_level = payload['ial']
 
-            if 'picture' in payload:
+            if ('picture' in payload and 'None' not in payload['picture']
+                    and 'no-img' not in payload['picture']):
                 profile.picture_url = payload['picture']
 
             profile.most_recent_id_token_payload = json.dumps(
                 payload, indent=4)
 
+        profile.user.save()
         profile.save()

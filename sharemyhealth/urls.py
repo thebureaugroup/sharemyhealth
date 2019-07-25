@@ -21,6 +21,7 @@ from apps.home.views import authenticated_home
 from oauth2_provider import views
 from apps.hie.decorators import bind_to_patient
 from django.views.generic import TemplateView
+from . import signals  # noqa
 
 __author__ = "Alan Viars"
 
@@ -40,7 +41,6 @@ urlpatterns = [
     url(r'^rhio/', include('apps.hie.urls')),
     url(r'^hixny/', include('apps.hie.urls')),
     url(r'^testclient/', include('apps.testclient.urls')),
-
     path('data-source-agreement/', TemplateView.as_view(
         template_name='data-source-agreement.html'), name='data-source-agreement'),
     path('', authenticated_home, name='home'),

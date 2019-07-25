@@ -18,17 +18,60 @@
 
                 
                 <div class="col-lg-12 well">
-
-                    <h2>Welcome</h2>
-                    <p>Welcome to the {{ settings.APPLICATION_TITLE }}</p>
-     
-       
-                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">
-                                    <button type="button" class="btn btn-primary"> <i class="fa fa-sign-in"></i> Login</button></a>
                     
-                <a href="{{settings.VMI_SIGNUP_URL}}">
-                    <button type="button" class="btn btn-primary"> <i class="fa fa-plus"></i> Signup</button></a>
-                
+                    <h3>Welcome to the</h3>
+                    <h1>{{ settings.APPLICATION_TITLE }}</h1>
+                    
+                    
+                    
+                    <p> This is an API for serving <a href="{{settings.KILLER_APP_URI}}">personal health information</a> using <a href=""https://oauth.net/2/">OAuth2</a>
+                    for delegated access control.</p>
+                    
+
+                    
+                    <h3> APIs Served Here</h2>
+                    <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">URL</th>
+                        <th scope="col">Auth</th>
+                        <th scope="col">Docs</th>
+                        <th scope="col">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+
+                      <tr>
+                        <th scope="row">OAuth2 Discovery</th>
+                        <td><a href="{% url "oauth_authorization_server" %}"> {% url "oauth_authorization_server" %} </a></td>
+                        <td>Public</td>
+                        <td><a href="https://tools.ietf.org/html/rfc8414">docs</a></td>
+                        <td>See OAuth2 Discovery</td>
+                        
+                      </tr>
+                         <tr>
+                        <th scope="row">FHIR Patient Everything</th>
+                        <td><a href="{% url "get_patient_fhir_content" %}"> {% url "get_patient_fhir_content" %} </a></td>
+                        <td>OAuth2 (Self/Patient-only)</td>
+                        <td><a href="https://www.hl7.org/fhir/operation-patient-everything.html">docs</a></td>
+                        <td>Response is a FHIR Bundle resource.</td>
+                      </tr>
+                      
+                      <tr>
+                        <th scope="row">User Profile</th>
+                        <td><a href="{% url "user_profile" %}"> {% url "user_profile" %} </a></td>
+                        <td>OAuth2 (Self)</td>
+                        <td><a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfo">docs</a></td>
+                         <td>Response is in OpenID Connect format. Security tip: Get this information from the upstream id_token instead.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                    
+          
+                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">
+                                    <button type="button" class="btn btn-primary"> <i class="fa fa-sign-in"></i> Login </button></a>
+                                    
                 </div>
                 
                 </div>

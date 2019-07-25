@@ -16,12 +16,11 @@ def get_patient_fhir_content(request):
     user = request.resource_owner
     up, g_o_c = UserProfile.objects.get_or_create(user=user)
     hp, g_o_c = HIEProfile.objects.get_or_create(user=user)
-    if request.GET.get('refresh'):
-        hie_data = hixny_requests.fetch_patient_data(user, hp, up)
-        if not hie_data.get('error'):
-            hp.__dict__.update(**hie_data)
-            hp.save()
-    return JsonResponse(json.loads(hp.fhir_content))
+    hie_data = hixny_requests.fetch_patient_data(user, hp, up)
+    if not hie_data.get('error'):
+        hp.__dict__.update(**hie_data)
+        hp.save()
+    return JsonResponse(json.loads(hp.fhir_content or '{}'))
 
 
 @require_GET

@@ -19,8 +19,8 @@
                  style="vertical-align:text-top;max-height:100%;max-width:100%"></a>
         <a href="{% url 'home' %}" contenteditable="false"
            class="navbar-brand"
-           alt="{{ settings.APPLICATION_TITLE }}">
-                <strong>{{ settings.APPLICATION_TITLE }}</strong>
+           alt="{{ settings.TOP_LEFT_TITLE }}">
+                <strong>{{ settings.TOP_LEFT_TITLE }}</strong>
         </a>
     </div>
 
@@ -59,22 +59,27 @@
         </li>
 
         {% else %}
+           
+           <li><a href="{% url "social:begin" "verifymyidentity-openidconnect" %}"> <i class="fa fa-sign-in""></i> Login</a></li>
+           
+            <!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Account <b class="caret"></b></a>
               <ul class="dropdown-menu">
-              <!--
+              
                 <li><a href="{% url "social:begin" "google-oauth2" %}"><i class="fa fa-sign-in"></i>  Login with Google+</a></li>
                 <li><a href="{% url "social:begin" "google-openidconnect" %}"><i class="fa fa-sign-in"></i>  Login with Google OpenID Connect</a></li>
                 <li><a href="{% url "social:begin" "instagram" %}"><i class="fa fa-sign-in"></i>  Login with Instagram</a></li>
                 <li><a href="{% url "social:begin" "verifymyidentity-openidconnect" %}"><i class="fa fa-sign-in"></i>  Login with Verify My Identity</a></li>
-              -->
+              
               
               </ul>
             </li>
+-->
 
         {% endif %}
         {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out"></i></a></li>
+            <li><a href="{% url 'mylogout' %}">Logout <i class="fa fa-sign-out"></i></a></li>
         {% endif %}
       </ul>
     </div><!--/.nav-collapse -->

@@ -7,6 +7,4 @@ admin.autodiscover()
 urlpatterns = [
     url(r'id-token-payload', id_token_payload_json, name='id_token_payload_json'),
     url(r'', authenticated_home, name='home'),
-
-
 ]

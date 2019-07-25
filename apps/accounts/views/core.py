@@ -4,9 +4,34 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from ..forms import AccountSettingsForm
-
-
+from django.contrib.auth import logout
+from django.conf import settings
+from requests_oauthlib import OAuth2Session
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from social_django.models import UserSocialAuth
 logger = logging.getLogger('sharemyhealth_.%s' % __name__)
+
+
+def mylogout(request):
+    if request.user.is_authenticated:
+        logger.info("$s logged out.", request.user)
+        try:
+            social = request.user.social_auth.get(
+                provider='verifymyidentity-openidconnect')
+            token = social.extra_data['access_token']
+            oas = OAuth2Session(token=token)
+            oas.access_token = token
+            remote_logout = settings.REMOTE_LOGOUT_ENDPOINT
+            oas.get(remote_logout)
+            logger.info("%s remote logout of %s" %
+                        (request.user, settings.REMOTE_LOGOUT_ENDPOINT))
+        except UserSocialAuth.DoesNotExist:
+            pass
+        logger.info("$s logged out.", request.user)
+        logout(request)
+    # messages.success(request, _('You have been logged out.'))
+    return HttpResponseRedirect(reverse('home'))
 
 
 @login_required
