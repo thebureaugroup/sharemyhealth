@@ -31,8 +31,6 @@
           <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-question"></i>  Help <b class="caret"></b></a>
           <ul class="dropdown-menu">
-						<li><a href="{{settings.POLICY_URI}}"><i class="fa fa-user-secret"></i> {{settings.POLICY_TITLE}}</a></li>
-            <li><a href="{{settings.USER_DOCS_URI}}"><i class="fa fa-map"></i> {{settings.USER_DOCS_TITLE}}</a></li>
             <li><a href="{{settings.DEVELOPER_DOCS_URI}}"><i class="fa fa-gears"></i> {{settings.DEVELOPER_DOCS_TITLE}}</a></li>
           </ul>
         </li>
@@ -40,18 +38,15 @@
 
       <ul class="nav navbar-nav navbar-right">
 
-
-
-		
 		
 		{% if user.is_authenticated %}
 
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tasks"></i> Applications <b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-legal"></i> Applications You Have Granted Access</a>
-		    <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-key"></i> Register Applications (Developers)</a>
-        <li><a href="{% url 'test_links' %}">  <i class="fa fa-key"></i> Test Client (Developers)</a>
+           <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-legal"></i> Applications You Have Granted Access</a>
+		       <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-key"></i> Register Applications (Developers)</a>
+           <li><a href="{% url 'test_links' %}">  <i class="fa fa-key"></i> Test Client (Developers)</a>
 
           </ul>
         </li>
