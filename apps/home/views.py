@@ -12,7 +12,7 @@ _author_ = "Alan Viars"
 
 @login_required
 def id_token_payload_json(request):
-    print("here")
+
     try:
         vmi = request.user.social_auth.filter(
             provider='verifymyidentity-openidconnect')[0]
