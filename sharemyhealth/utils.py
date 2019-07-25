@@ -16,7 +16,6 @@ def bool_env(env_val):
     else:
         if env_val in FALSE_LIST:
             return False
-
         return
 
 

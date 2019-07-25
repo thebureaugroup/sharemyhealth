@@ -76,7 +76,7 @@ def get_authorization(request):
         messages.error(request, error_message)
         return HttpResponseRedirect(reverse('home'))
     else:
-        messages.info(request, "status: %(status)s, notice: %(notice)s" % search_data)
+        # messages.info(request, "status: %(status)s, notice: %(notice)s" % search_data)
         hp.terms_accepted = search_data.get('terms_accepted')
         hp.terms_string = search_data.get('terms_string')
         hp.stageuser_password = search_data.get('stageuser_password')
