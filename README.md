@@ -27,8 +27,13 @@ to be run.
 
 [ShareMyHealth](https://github.com/TransparentHealth/sharemyhealth) is designed as a 
 consumer-mediated health information exchange.  
+
 ShareMyHealth acts as a relying party to 
 [vmi](https://github.com/TransparentHealth/vmi).
+
+ShareMyHealth is an OAuth2 Provider for the ShareMyHealth App.
+https://github.com/TransparentHealth/smh_app
+
 
 [VerifyMyIdentity - VMI](https://github.com/TransparentHealth/vmi), 
 a standards-focused OpenID Connect Identity Provider.
