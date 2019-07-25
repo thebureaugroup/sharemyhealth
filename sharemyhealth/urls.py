@@ -19,9 +19,10 @@ from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from apps.home.views import authenticated_home
 from oauth2_provider import views
-from apps.hie.decorators import bind_to_patient
+from apps.hie.decorators import check_ial_before_allowing_authorize
 from django.views.generic import TemplateView
 from . import signals  # noqa
+
 
 __author__ = "Alan Viars"
 
@@ -32,7 +33,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^home/', include('apps.home.urls')),
     url(r"^o/authorize/$",
-        bind_to_patient(views.AuthorizationView.as_view()), name="authorize"),
+        check_ial_before_allowing_authorize(views.AuthorizationView.as_view()), name="authorize"),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^.well-known/', include('apps.wellknown.urls')),
     url(r'^api/', include('apps.api.urls')),
