@@ -1,10 +1,16 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.contrib import admin
-from .views import CDAExample
+from .views import CDAExample, logout_user
 
 
 admin.autodiscover()
 
+
+v1 = [
+     url(r'cda', CDAExample.as_view(), name='cda'),
+     url('remote-logout', logout_user, name="remote_logout"),
+]
+
 urlpatterns = [
-    url(r'cda', CDAExample.as_view(), name='cda'),
+    url('v1/', include(v1)),
 ]
