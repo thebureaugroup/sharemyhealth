@@ -15,6 +15,7 @@ from django.http import JsonResponse
 
 logger = logging.getLogger('sharemyhealth_.%s' % __name__)
 
+
 class CDAExample(APIView):
 
     # authentication_classes = (authentication.TokenAuthentication,)
