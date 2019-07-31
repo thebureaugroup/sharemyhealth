@@ -25,8 +25,9 @@ to be run.
 
 ## Associated Projects
 
-[ShareMyHealth](https://github.com/TransparentHealth/sharemyhealth) is designed as a 
-consumer-mediated health information exchange.  
+[ShareMyHealth App](https://github.com/TransparentHealth/smh_app) is 
+a personal health records for aggregating and sharing data with 
+organizations.
 
 ShareMyHealth acts as a relying party to 
 [vmi](https://github.com/TransparentHealth/vmi).
