@@ -5,6 +5,7 @@ from .views import CDAExample, logout_user
 
 admin.autodiscover()
 
+# Copyright Videntity Systems, Inc. 2019
 
 v1 = [
      url(r'cda', CDAExample.as_view(), name='cda'),
