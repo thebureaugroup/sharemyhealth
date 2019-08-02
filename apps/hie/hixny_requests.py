@@ -17,7 +17,7 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
     """do what we need to do to fetch patient data from HIXNY, if possible, for the given user.
     returns values that can be used to update the user's HIEProfile
     """
-    result = {}
+    result = {'responses': []}
 
     if hie_profile is None:
         hie_profile, created = HIEProfile.objects.get(user=user)
@@ -39,13 +39,19 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
         if not hie_profile.mrn:
             # try to find the member
             search_data = patient_search(access_token, user_profile)
+            if 'response_body' in search_data:
+                result['responses'].append(search_data['response_body'])
+
             if search_data.get('mrn'):
                 # member found, already has portal account
                 hie_profile.mrn = search_data['mrn']
                 hie_profile.save()
 
-            elif not (search_data.get('error')
-                      or search_data.get('status') == 'ERROR' and search_data.get('notice')):
+            elif not (
+                search_data.get('error')
+                or search_data.get('status') == 'ERROR'
+                and search_data.get('notice')
+            ):
                 # member found
                 hie_profile.terms_accepted = search_data.get('terms_accepted')
                 hie_profile.terms_string = search_data.get('terms_string')
@@ -54,9 +60,17 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
                 hie_profile.save()
 
                 # try to stage/activate the member
-                activated_member_data = activate_staged_user(access_token, hie_profile, user_profile)
+                activated_member_data = activate_staged_user(
+                    access_token, hie_profile, user_profile
+                )
                 print('activated_member_data:', activated_member_data)
-                if activated_member_data['status'] == 'success' and activated_member_data.get('mrn'):
+                if 'response_body' in activated_member_data:
+                    result['responses'].append(activated_member_data['response_body'])
+
+                if (
+                    activated_member_data.get('mrn')
+                    and activated_member_data['status'] == 'success'
+                ):
                     hie_profile.mrn = activated_member_data['mrn']
                     hie_profile.save()
 
@@ -64,17 +78,20 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
 
         # if the consumer directive checks out, get the clinical data and store it
         directive = consumer_directive(access_token, hie_profile, user_profile)
-        if directive['status'] == "OK" and directive['notice'] in (
-                "Document has been prepared.",
-                "Document already exists.",
-        ):
+        if 'response_body' in directive:
+            result['responses'].append(directive['response_body'])
+
+        if directive['status'] == "OK":
             document_data = get_clinical_document(access_token, hie_profile)
+            if 'response_body' in document_data:
+                result['responses'].append(document_data['response_body'])
+
             result['cda_content'] = document_data['cda_content']
             result['fhir_content'] = document_data['fhir_content']
         else:
             result['error'] = "Clinical data could not be loaded."
-            if settings.DEBUG:
-                result['error'] += " %r" % directive
+            if settings.DEBUG and directive.get('error'):
+                result['error'] += " (%s)" % directive['error'] or ''
 
     return result
 
@@ -98,7 +115,9 @@ def acquire_access_token():
     response_json = response.json()
     if 'access_token' not in response_json:
         access_token = None
-        error_message = _("We're sorry. We could not connect to HIE. Please try again later.")
+        error_message = _(
+            "We're sorry. We could not connect to HIE. Please try again later."
+        )
         if settings.DEBUG is True:
             error_message += " DATA=%s response=%s TOKEN_URI=%s BASIC_AUTH=%s" % (
                 data,
@@ -110,10 +129,7 @@ def acquire_access_token():
         access_token = response_json['access_token']
         error_message = None
 
-    return {
-        'access_token': access_token,
-        'error_message': error_message,
-    }
+    return {'access_token': access_token, 'error_message': error_message}
 
 
 def patient_search(access_token, user_profile):
@@ -136,6 +152,7 @@ def patient_search(access_token, user_profile):
             <PatHomePhone></PatHomePhone>
             <PatEmail></PatEmail>
             <WorkBenchUserName>%s</WorkBenchUserName>
+            <ConsentToShareData>1</ConsentToShareData>
         </PatientSearchPayLoad>
         """ % (
         user_profile.gender_intersystems,
@@ -151,14 +168,15 @@ def patient_search(access_token, user_profile):
         verify=False,
         headers={
             'Content-Type': 'application/xml',
-            'Authorization': "Bearer %s" % (access_token)
+            'Authorization': "Bearer %s" % (access_token),
         },
-        data=patient_search_xml)
+        data=patient_search_xml,
+    )
 
     response_xml = etree.XML(response.content)
-    print(etree.tounicode(response_xml, pretty_print=True))
+    result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
+    print(result['response_body'])
 
-    result = {}
     for element in response_xml:
         if element.tag == "{%(hl7)s}Notice" % NAMESPACES:
             result['error'] = element.text
@@ -210,42 +228,51 @@ def activate_staged_user(access_token, hie_profile, user_profile):
         verify=False,
         headers={
             'Content-Type': 'application/xml',
-            'Authorization': "Bearer %s" % (access_token)
+            'Authorization': "Bearer %s" % (access_token),
         },
-        data=activate_xml)
+        data=activate_xml,
+    )
 
     response_content = response.content.decode('utf-8')
     response_xml = etree.XML(response.content)
-    print(etree.tounicode(response_xml, pretty_print=True))
+
+    result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
+    print(result['response_body'])
 
     mrn_elements = response_xml.xpath("//hl7:ActivatedUserMrn", namespaces=NAMESPACES)
     mrn_match = re.search(r"ActivatedUserMrn>(\d+)<", response_content)
+
     if len(mrn_elements) > 0:
         mrn_element = mrn_elements[0]
         print('mrn_element =', etree.tounicode(mrn_element))
-        result = {'status': 'success', 'mrn': etree.tounicode(mrn_element, method='text', with_tail=False).strip()}
+        result.update(
+            status='success',
+            mrn=etree.tounicode(mrn_element, method='text', with_tail=False).strip(),
+        )
     elif mrn_match is not None:
         print('mrn_match =', mrn_match)
-        result = {'status': 'success', 'mrn': mrn_match.group(1)}
+        result.update(status='success', mrn=mrn_match.group(1))
     else:
-        result = {'status': 'failure', 'mrn': None}
+        result.update(
+            status='failure', mrn=None, error='Could not activate staged user.'
+        )
 
     return result
 
 
 def consumer_directive(access_token, hie_profile, user_profile):
-    """post to the consumer directive API to determine the given member's consumer directive;
+    """post to the consumer directive API to determine the member's consumer directive;
     returns data containing the status and any notice.
     """
     if not hie_profile.consent_to_share_data:
         result = {
             'status': 'ERROR',
-            'notice': 'Member has not consented to share data, cannot submit consumer directive.'
+            'notice': 'Member has not consented to share data, cannot submit consumer directive.',
         }
     elif not hie_profile.mrn:
         result = {
             'status': 'ERROR',
-            'notice': 'Member MRN not set, cannot submit consumer directive.'
+            'notice': 'Member MRN not set, cannot submit consumer directive.',
         }
     else:
         consumer_directive_xml = """
@@ -268,17 +295,24 @@ def consumer_directive(access_token, hie_profile, user_profile):
             verify=False,
             headers={
                 'Content-Type': 'application/xml',
-                'Authorization': "Bearer %s" % (access_token)
+                'Authorization': "Bearer %s" % (access_token),
             },
             data=consumer_directive_xml,
         )
         response_xml = etree.XML(response.content)
-        print(etree.tounicode(response_xml, pretty_print=True))
+        result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
+        print(result['response_body'])
 
-        result = {
-            'status': ''.join(response_xml.xpath("hl7:Status/text()", namespaces=NAMESPACES)),
-            'notice': ''.join(response_xml.xpath("hl7:Notice/text()", namespaces=NAMESPACES)),
-        }
+        result.update(
+            status=''.join(
+                response_xml.xpath("hl7:Status/text()", namespaces=NAMESPACES)
+            ),
+            notice=''.join(
+                response_xml.xpath("hl7:Notice/text()", namespaces=NAMESPACES)
+            ),
+        )
+        if result['status'] == 'ERROR':
+            result['error'] = result['notice']
 
     return result
 
@@ -302,26 +336,21 @@ def get_clinical_document(access_token, hie_profile):
         verify=False,
         headers={
             'Content-Type': 'application/xml',
-            'Authorization': "Bearer %s" % (access_token)
+            'Authorization': "Bearer %s" % (access_token),
         },
         data=request_xml,
     )
     response_xml = etree.XML(response.content)
-    print(response_xml)
 
+    result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
+    
     cda_element = response_xml.find("{%(hl7)s}ClinicalDocument" % NAMESPACES)
     if cda_element is not None:
         cda_content = etree.tounicode(cda_element)
         fhir_content = cda2fhir(cda_content).decode('utf-8')
-        result = {
-            'cda_content': cda_content,
-            'fhir_content': fhir_content,
-        }
+        result.update(cda_content=cda_content, fhir_content=fhir_content)
     else:
-        result = {
-            'cda_content': None,
-            'fhir_content': None,
-        }
+        result.update(cda_content='', fhir_content='')
 
     return result
 
@@ -331,7 +360,7 @@ def cda2fhir(cda_content):
     response = requests.post(
         settings.CDA2FHIR_SERVICE_URL,
         data=cda_content,
-        headers={'Content-Type': 'application/xml'})
+        headers={'Content-Type': 'application/xml'},
+    )
     fhir_content = response.content
     return fhir_content
-
