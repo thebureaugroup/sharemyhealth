@@ -1,0 +1,18 @@
+[
+{
+    "model": "oauth2_provider.application",
+    "pk": 1,
+    "fields": {
+        "client_id": "SHARE-MY-HEALTH-WEB-APPLICATION",
+        "user": 2,
+        "redirect_uris": "http://localhost:8002/social-auth/complete/sharemyhealth/\r\nhttps://app.sharemy.health/social-auth/complete/sharemyhealth/\r\nhttp://app.sharemyhealth:8002/social-auth/complete/sharemyhealth/\r\nhttp://smhapp:8002/social-auth/complete/sharemyhealth/",
+        "client_type": "confidential",
+        "authorization_grant_type": "authorization-code",
+        "client_secret": "SHARE-MY-HEALTH-WEB-APPLICATION-CLIENT-SECRET-CHANGE-ME",
+        "name": "Share My Health Web Application",
+        "skip_authorization": false,
+        "created": "2019-07-12T21:21:26.799Z",
+        "updated": "2019-07-17T15:09:57.441Z"
+    }
+}
+]
