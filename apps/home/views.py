@@ -2,12 +2,35 @@ from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from jwkest.jwt import JWT
 from ..hie.models import HIEProfile
+from ..hie.hixny_requests import acquire_access_token, consumer_directive, get_clinical_document
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.http import HttpResponseRedirect, FileResponse
+from django.urls import reverse
 
 _author_ = "Alan Viars"
+
+
+@login_required
+def fetch_cda(request):
+    hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
+    # print(hp)
+
+    if not hp.mrn:
+        msg = _(
+            "Your identity is not yet bound to a resource. Try connecting with OAuth2 using the Test client.")
+        messages.warning(request, msg)
+        return HttpResponseRedirect(reverse('authenticated_home'))
+    access_token = acquire_access_token()
+    # print(access_token)
+    result = consumer_directive(
+        access_token['access_token'], hp, request.user.userprofile)
+    result = get_clinical_document(access_token['access_token'], hp)
+    # print(result)
+    return FileResponse(result['response_body'],
+                        content_type='application/xml')
 
 
 @login_required

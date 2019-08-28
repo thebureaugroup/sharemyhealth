@@ -426,6 +426,23 @@ HIE_WORKBENCH_PASSWORD = env('HIE_WORKBENCH_PASSWORD', '')
 HIE_BASIC_AUTH_PASSWORD = env('HIE_BASIC_AUTH_PASSWORD', '')
 
 
+HIE_CLIENT_CERT = env('HIE_CLIENT_CERT', """
+-----BEGIN CERTIFICATE-----
+replace with your cert or set the env var.
+-----END CERTIFICATE-----""")
+
+HIE_CLIENT_PRIVATE_KEY = env('HIE_CLIENT_PRIVATE_KEY', """
+-----BEGIN PRIVATE KEY-----
+replace with your private key or set the env var.
+-----END PRIVATE KEY-----
+""")
+
+
+HIE_CLIENT_CERT_FILEPATH = env('HIE_CLIENT_CERT_FILEPATH', 'client-cert.pem')
+HIE_CLIENT_PRIVATE_KEY_FILEPATH = env(
+    'HIE_CLIENT_PRIVATE_KEY_FILEPATH', 'client-private-key.pem')
+
+
 # Should be operated behind a firewall and in ssl/https in production.
 CDA2FHIR_SERVICE_URL = env('CDA2FHIR_SERVICE',
                            'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
@@ -435,4 +452,4 @@ SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
 
 # Expire when browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_SAMESITE = None
+# SESSION_COOKIE_SAMESITE = None

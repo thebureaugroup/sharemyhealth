@@ -42,12 +42,15 @@ verify your identity before you can gain full access. Please see your point of c
 
 
  {% ifequal hp.mrn "" %}
+                       
+                       <!--
                          <a href="{% url 'hie_get_authorization' %}">
                             <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Connect to HIXNY {{ settings.APPLICATION_TITLE }} </button></a>
+                        -->
  {% else %}
                        
-                        <a href="{% url 'approve_authorization' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest data from {{ settings.APPLICATION_TITLE }} </button></a>
+                        <a href="{% url 'fetch_cda' %}">
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest CCDA for {{ request.user.first_name.title }} {{ request.user.last_name|title }} </button></a>
                         <h3>Download your Data</h3>
 
 
