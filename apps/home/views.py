@@ -16,7 +16,7 @@ _author_ = "Alan Viars"
 @login_required
 def fetch_cda(request):
     hp, g_o_c = HIEProfile.objects.get_or_create(user=request.user)
-    print(hp)
+    # print(hp)
 
     if not hp.mrn:
         msg = _(
@@ -24,11 +24,11 @@ def fetch_cda(request):
         messages.warning(request, msg)
         return HttpResponseRedirect(reverse('authenticated_home'))
     access_token = acquire_access_token()
-    print(access_token)
+    # print(access_token)
     result = consumer_directive(
         access_token['access_token'], hp, request.user.userprofile)
     result = get_clinical_document(access_token['access_token'], hp)
-    print(result)
+    # print(result)
     return FileResponse(result['response_body'],
                         content_type='application/xml')
 
