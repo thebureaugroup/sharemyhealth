@@ -438,7 +438,7 @@ replace with your private key or set the env var.
 """)
 
 
-HIE_CLIENT_CERT_FILEPATH = env('HIE_CLIENT_CERT_FILEPATH', 'client-cert2.pem')
+HIE_CLIENT_CERT_FILEPATH = env('HIE_CLIENT_CERT_FILEPATH', 'client-cert.pem')
 HIE_CLIENT_PRIVATE_KEY_FILEPATH = env(
     'HIE_CLIENT_PRIVATE_KEY_FILEPATH', 'client-private-key.pem')
 
