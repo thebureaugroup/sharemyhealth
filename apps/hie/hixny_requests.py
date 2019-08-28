@@ -16,7 +16,7 @@ def write_key_to_filepath(filepath, env_to_write):
         f.close()
     except FileNotFoundError:
         f = open(filepath, 'w')
-        f.write(settings.HIE_CLIENT_CERT)
+        f.write(env_to_write)
         f.close()
     return filepath
 
