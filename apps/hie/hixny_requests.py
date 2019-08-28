@@ -6,6 +6,19 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from .models import HIEProfile
 from ..accounts.models import UserProfile
+from getenv import env
+
+def write_key_to_filepath(filepath, env_to_write):
+    try:
+        f = open(filepath, 'r')
+        f.close()
+    except:
+        f = open(filepath, 'w')
+        f.write(settings.HIE_CLIENT_CERT)
+        f.close()
+    return filepath
+        
+
 
 NAMESPACES = {
     'hl7': "urn:hl7-org:v3",
@@ -97,7 +110,7 @@ def fetch_patient_data(user, hie_profile=None, user_profile=None):
 
 
 def acquire_access_token():
-    """establish a connection to the hixny service;
+    """establish a connection to the HIXNY service;
     returns JSON containing an access token on successful connection
     """
     data = {
@@ -108,6 +121,8 @@ def acquire_access_token():
     }
     response = requests.post(
         settings.HIE_TOKEN_API_URI,
+        cert=(write_key_to_filepath(settings.HIE_CLIENT_CERT_FILEPATH, settings.HIE_CLIENT_CERT),
+              write_key_to_filepath(settings.HIE_CLIENT_PRIVATE_KEY_FILEPATH, settings.HIE_CLIENT_PRIVATE_KEY)),
         data=data,
         verify=False,
         auth=HTTPBasicAuth('password-client', settings.HIE_BASIC_AUTH_PASSWORD),
@@ -135,7 +150,7 @@ def acquire_access_token():
 def patient_search(access_token, user_profile):
     """search for a patient with the given profile; if found, return """
     patient_search_xml = """
-        <PatientSearchPayLoad>
+       <PatientSearchPayLoad>
             <PatGender>%s</PatGender>
             <PatDOB>%s</PatDOB>
             <PatFamilyName>%s</PatFamilyName>
@@ -161,10 +176,12 @@ def patient_search(access_token, user_profile):
         user_profile.user.first_name,
         settings.HIE_WORKBENCH_USERNAME,
     )
-    print(patient_search_xml)
+    # print(patient_search_xml)
 
     response = requests.post(
         settings.HIE_PHRREGISTER_API_URI,
+        cert=(write_key_to_filepath(settings.HIE_CLIENT_CERT_FILEPATH, settings.HIE_CLIENT_CERT),
+              write_key_to_filepath(settings.HIE_CLIENT_PRIVATE_KEY_FILEPATH, settings.HIE_CLIENT_PRIVATE_KEY)),
         verify=False,
         headers={
             'Content-Type': 'application/xml',
@@ -175,7 +192,7 @@ def patient_search(access_token, user_profile):
 
     response_xml = etree.XML(response.content)
     result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
-    print(result['response_body'])
+    # print(result['response_body'])
 
     for element in response_xml:
         if element.tag == "{%(hl7)s}Notice" % NAMESPACES:
@@ -221,10 +238,12 @@ def activate_staged_user(access_token, hie_profile, user_profile):
         hie_profile.stageuser_password,
         hie_profile.consent_to_share_data,
     )
-    print(activate_xml)
+    # print(activate_xml)
 
     response = requests.post(
         settings.HIE_ACTIVATESTAGEDUSER_API_URI,
+        cert=(write_key_to_filepath(settings.HIE_CLIENT_CERT_FILEPATH, settings.HIE_CLIENT_CERT),
+              write_key_to_filepath(settings.HIE_CLIENT_PRIVATE_KEY_FILEPATH, settings.HIE_CLIENT_PRIVATE_KEY)),
         verify=False,
         headers={
             'Content-Type': 'application/xml',
@@ -237,20 +256,20 @@ def activate_staged_user(access_token, hie_profile, user_profile):
     response_xml = etree.XML(response.content)
 
     result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
-    print(result['response_body'])
+    # print(result['response_body'])
 
     mrn_elements = response_xml.xpath("//hl7:ActivatedUserMrn", namespaces=NAMESPACES)
     mrn_match = re.search(r"ActivatedUserMrn>(\d+)<", response_content)
 
     if len(mrn_elements) > 0:
         mrn_element = mrn_elements[0]
-        print('mrn_element =', etree.tounicode(mrn_element))
+        # print('mrn_element =', etree.tounicode(mrn_element))
         result.update(
             status='success',
             mrn=etree.tounicode(mrn_element, method='text', with_tail=False).strip(),
         )
     elif mrn_match is not None:
-        print('mrn_match =', mrn_match)
+        # print('mrn_match =', mrn_match)
         result.update(status='success', mrn=mrn_match.group(1))
     else:
         result.update(
@@ -288,10 +307,12 @@ def consumer_directive(access_token, hie_profile, user_profile):
             hie_profile.data_requestor,
             hie_profile.consent_to_share_data,
         )
-        print(consumer_directive_xml)
+        # print(consumer_directive_xml)
 
         response = requests.post(
             settings.HIE_CONSUMERDIRECTIVE_API_URI,
+            cert=(write_key_to_filepath(settings.HIE_CLIENT_CERT_FILEPATH, settings.HIE_CLIENT_CERT),
+              write_key_to_filepath(settings.HIE_CLIENT_PRIVATE_KEY_FILEPATH, settings.HIE_CLIENT_PRIVATE_KEY)),
             verify=False,
             headers={
                 'Content-Type': 'application/xml',
@@ -301,7 +322,7 @@ def consumer_directive(access_token, hie_profile, user_profile):
         )
         response_xml = etree.XML(response.content)
         result = {"response_body": etree.tounicode(response_xml, pretty_print=True)}
-        print(result['response_body'])
+        # print(result['response_body'])
 
         result.update(
             status=''.join(
@@ -333,6 +354,8 @@ def get_clinical_document(access_token, hie_profile):
 
     response = requests.post(
         settings.HIE_GETDOCUMENT_API_URI,
+        cert=(write_key_to_filepath(settings.HIE_CLIENT_CERT_FILEPATH, settings.HIE_CLIENT_CERT),
+              write_key_to_filepath(settings.HIE_CLIENT_PRIVATE_KEY_FILEPATH, settings.HIE_CLIENT_PRIVATE_KEY)),
         verify=False,
         headers={
             'Content-Type': 'application/xml',
