@@ -50,7 +50,7 @@ verify your identity before you can gain full access. Please see your point of c
  {% else %}
                        
                         <a href="{% url 'fetch_cda' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest CCDA for {{ request.user.first_name.title }} {{ request.user.first_last|title }} </button></a>
+                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest CCDA for {{ request.user.first_name.title }} {{ request.user.last_name|title }} </button></a>
                         <h3>Download your Data</h3>
 
 

@@ -431,7 +431,7 @@ HIE_CLIENT_CERT = env('HIE_CLIENT_CERT', """
 replace with your cert or set the env var.
 -----END CERTIFICATE-----""")
 
-HIE_CLIENT_PRIVATE_KEY = env('HIE_CLIENT_PRIVATE_KEY' ,"""
+HIE_CLIENT_PRIVATE_KEY = env('HIE_CLIENT_PRIVATE_KEY', """
 -----BEGIN PRIVATE KEY-----
 replace with your private key or set the env var.
 -----END PRIVATE KEY-----
@@ -439,7 +439,8 @@ replace with your private key or set the env var.
 
 
 HIE_CLIENT_CERT_FILEPATH = env('HIE_CLIENT_CERT_FILEPATH', 'client-cert2.pem')
-HIE_CLIENT_PRIVATE_KEY_FILEPATH = env('HIE_CLIENT_PRIVATE_KEY_FILEPATH', 'client-private-key.pem')
+HIE_CLIENT_PRIVATE_KEY_FILEPATH = env(
+    'HIE_CLIENT_PRIVATE_KEY_FILEPATH', 'client-private-key.pem')
 
 
 # Should be operated behind a firewall and in ssl/https in production.
@@ -452,4 +453,3 @@ SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
 # Expire when browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_COOKIE_SAMESITE = None
-
