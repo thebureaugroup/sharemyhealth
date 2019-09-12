@@ -8,13 +8,13 @@ from django.utils.translation import ugettext_lazy as _
 __author__ = "Alan Viars"
 
 
-SEX_CHOICES = (('male', 'Male'), ('female', 'Female'), ('', 'Unknown'))
+SEX_CHOICES = (('male', 'Male'), ('female', 'Female'), ('', 'Unspecified'))
 
 GENDER_CHOICES = (('M', 'Male'),
                   ('F', 'Female'),
                   ('TMF', 'Transgender Male to Female'),
                   ('TFM', 'Transgender Female to Male'),
-                  ('U', 'Unknown'))
+                  ('', 'Unspecified'))
 
 
 class UserProfile(models.Model):
@@ -28,6 +28,7 @@ class UserProfile(models.Model):
         default='',
         blank=True,
         help_text='Nickname, alias, or other names used.')
+    middle_name = models.CharField( max_length=255, default='', blank=True)
     email_verified = models.BooleanField(default=False, blank=True)
     phone_verified = models.BooleanField(default=False, blank=True)
     picture_url = models.CharField(blank=True, default="", max_length=1024,
@@ -46,7 +47,7 @@ class UserProfile(models.Model):
                               help_text=_('Birth Sex Gender'),
                               )
     gender_identity = models.CharField(choices=GENDER_CHOICES,
-                                       max_length=3, default="U",
+                                       max_length=3, default="",
                                        help_text=_('Gender Identity'),
                                        )
 
