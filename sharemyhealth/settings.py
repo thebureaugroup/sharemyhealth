@@ -279,7 +279,7 @@ DEFAULT_DISCLOSURE_TEXT = """
     its data may result in civil and criminal penalties.
     """
 
-DISCLOSURE_TEXT = env('DJANGO_PRIVACY_POLICY_URI', DEFAULT_DISCLOSURE_TEXT)
+DISCLOSURE_TEXT = env('DISCLOSURE_TEXT', DEFAULT_DISCLOSURE_TEXT)
 
 HOSTNAME_URL = env('HOSTNAME_URL', 'http://hixny-oauth2:8001')
 
