@@ -28,7 +28,7 @@ class UserProfile(models.Model):
         default='',
         blank=True,
         help_text='Nickname, alias, or other names used.')
-    middle_name = models.CharField( max_length=255, default='', blank=True)
+    middle_name = models.CharField(max_length=255, default='', blank=True)
     email_verified = models.BooleanField(default=False, blank=True)
     phone_verified = models.BooleanField(default=False, blank=True)
     picture_url = models.CharField(blank=True, default="", max_length=1024,
