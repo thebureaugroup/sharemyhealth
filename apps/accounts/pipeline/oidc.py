@@ -42,6 +42,12 @@ def save_profile(backend, user, response, *args, **kwargs):
             if 'email_verified' in payload:
                 profile.email_verified = payload['email_verified']
 
+            if 'gender_identity' in payload:
+                profile.gender_identity = payload['gender_identity']
+
+            if 'middle_name' in payload:
+                profile.middle_name = payload['middle_name']
+
             if 'phone_verified' in payload:
                 profile.phone_verified = payload['phone_verified']
 
