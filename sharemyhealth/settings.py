@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'sharemyhealth.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=env('DATABASES_CUSTOM',
-                    'sqlite:///{}/db.sqlite3'.format(BASE_DIR))
+                    'sqlite:///{}/db/db.sqlite3'.format(BASE_DIR))
     ),
 }
 
