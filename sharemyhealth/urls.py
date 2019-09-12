@@ -26,6 +26,10 @@ from . import signals  # noqa
 
 __author__ = "Alan Viars"
 
+admin.site.site_header = "OAuth2 and FHIR Server Admin"
+admin.site.site_title = "OAuth2 and FHIR Server Admin Portal"
+admin.site.index_title = "Share My Health: OAuth2 and FHIR Server Site Administration"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     url('social-auth/', include('social_django.urls', namespace='social')),

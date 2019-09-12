@@ -112,7 +112,7 @@ WSGI_APPLICATION = 'sharemyhealth.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=env('DATABASES_CUSTOM',
-                    'sqlite:///{}/db.sqlite3'.format(BASE_DIR))
+                    'sqlite:///{}/db/db.sqlite3'.format(BASE_DIR))
     ),
 }
 
@@ -230,6 +230,8 @@ SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT',
     'http://verifymyidentity:8000')
 
+# Set to True when using in a reverse proxy such as Gunicorn and Nginx
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = bool_env(env('SOCIAL_AUTH_REDIRECT_IS_HTTPS', False))
 
 REMOTE_LOGOUT_ENDPOINT = "%s/api/v1/remote-logout" % (
     SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT)
@@ -277,7 +279,7 @@ DEFAULT_DISCLOSURE_TEXT = """
     its data may result in civil and criminal penalties.
     """
 
-DISCLOSURE_TEXT = env('DJANGO_PRIVACY_POLICY_URI', DEFAULT_DISCLOSURE_TEXT)
+DISCLOSURE_TEXT = env('DISCLOSURE_TEXT', DEFAULT_DISCLOSURE_TEXT)
 
 HOSTNAME_URL = env('HOSTNAME_URL', 'http://hixny-oauth2:8001')
 
@@ -452,4 +454,15 @@ SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
 
 # Expire when browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-# SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None
+
+# Backend FHIR server client credentials
+# These may be used to connect to  Miacrsoft Azure Healthcare APIs
+BACKEND_FHIR_CLIENT_ID = env(
+    'BACKEND_FHIR_CLIENT_ID', "change-me")
+BACKEND_FHIR_CLIENT_SECRET = env(
+    'BACKEND_FHIR_CLIENT_SECRET', "change-me")
+BACKEND_FHIR_RESOURCE = env('BACKEND_FHIR_RESOURCE',
+                            "https://example.azurehealthcareapis.com")
+BACKEND_FHIR_TOKEN_ENDPOINT = env('BACKEND_FHIR_TOKEN_ENDPOINT',
+                                  "https://login.microsoftonline.com/example1234/oauth2/token")

@@ -6,11 +6,7 @@ admin.autodiscover()
 
 urlpatterns = [
     
-    url(r'fecth-cda-from-hie', fetch_cda, name='fetch_cda'),
-    url(r'', authenticated_home, name='home'),
-    url(r'id-token-payload', id_token_payload_json, name='id_token_payload_json'),
-
-    
-    
-    url(r'', authenticated_home, name='home'),
+    url(r'^fecth-cda-from-hie$', fetch_cda, name='fetch_cda'),
+    url(r'^id-token-payload$', id_token_payload_json, name='id_token_payload_json'),
+    url(r'^', authenticated_home, name='home'),
 ]
