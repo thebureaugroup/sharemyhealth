@@ -20,8 +20,9 @@ class Crosswalk(models.Model):
                                    blank=True, max_length=512,
                                    verbose_name=_('The backend FHIR server to proxy'))
     use_client_credentials = models.BooleanField(blank=True, default=False,
-                                    help_text="When checked, OAuth2 client credentials to access the FHIR source using values in settings.py")
-    
+                                                 help_text="""When checked, OAuth2 client credentials to
+                                             access the FHIR source using values in settings.py""")
+
     fhir_patient_id = models.CharField(max_length=80,
                                        blank=True, default="", unique=True)
     date_created = models.DateTimeField(auto_now_add=True)

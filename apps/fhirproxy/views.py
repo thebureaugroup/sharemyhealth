@@ -7,7 +7,7 @@ from django.conf import settings
 from django.views.decorators.http import require_GET
 from oauth2_provider.decorators import protected_resource
 from .models import Crosswalk
-
+from .utils import fhir_secured_request, fhir_get_access_token_with_client_credentials
 __author__ = "Alan Viars"
 
 
@@ -25,7 +25,7 @@ FHIR_RESOURCE_TO_ID_MAP['CarePlan'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Immunization'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Device'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Goal'] = "patient"
-FHIR_RESOURCE_TO_ID_MAP['ExplanationOfBenefit'] = "patient"
+FHIR_RESOURCE_TO_ID_MAP['ExplanationOfBenefit'] = "subject"
 FHIR_RESOURCE_TO_ID_MAP['Coverage'] = ""
 
 
@@ -57,7 +57,14 @@ def fhir_endpoint_with_id(request, fhir_resource, id):
     fhir_endpoint = "%s%s/%s" % (cw.fhir_source, fhir_resource, id)
 
     # print(fhir_endpoint)
-    r = requests.get(fhir_endpoint)
+    if cw.use_client_credentials:
+        r = fhir_secured_request(fhir_endpoint,
+                                 fhir_get_access_token_with_client_credentials())
+    else:
+        # We assume the FHIR server is accessible via VPN or other secure
+        # network channel.
+        r = requests.get(fhir_endpoint)
+
     t = r.text
     t = replace_fhir_refrences(t, back=cw.fhir_source)
     d = json.loads(t, object_pairs_hook=OrderedDict)
@@ -82,7 +89,6 @@ def fhir_endpoint_with_id(request, fhir_resource, id):
 @require_GET
 @protected_resource()
 def fhir_endpoint_search(request, fhir_resource):
-
     # Without an ID this is a search operation and return a Bundle
     if fhir_resource not in settings.FHIR_RESOURCES_SUPPORTED:
         raise Http404
@@ -104,7 +110,15 @@ def fhir_endpoint_search(request, fhir_resource):
     if patient_id_name:
         clean_get_params[patient_id_name] = fhir_patient_id
 
-    r = requests.get(fhir_endpoint, params=clean_get_params)
+    if cw.use_client_credentials:
+        r = fhir_secured_request(fhir_endpoint,
+                                 access_token=fhir_get_access_token_with_client_credentials(),
+                                 params=clean_get_params,)
+    else:
+        # We assume the FHIR server is accessible via VPN or other secure
+        # network channel.
+        r = requests.get(fhir_endpoint, params=clean_get_params)
+
     t = r.text
     t = replace_fhir_refrences(t, back=cw.fhir_source)
     d = json.loads(t, object_pairs_hook=OrderedDict)

@@ -453,3 +453,14 @@ SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
 # Expire when browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_SAMESITE = None
+
+# Backend FHIR server client credentials
+# These may be used to connect to  Miacrsoft Azure Healthcare APIs
+BACKEND_FHIR_CLIENT_ID = env(
+    'BACKEND_FHIR_CLIENT_ID', "change-me")
+BACKEND_FHIR_CLIENT_SECRET = env(
+    'BACKEND_FHIR_CLIENT_SECRET', "change-me")
+BACKEND_FHIR_RESOURCE = env('BACKEND_FHIR_RESOURCE',
+                            "https://example.azurehealthcareapis.com")
+BACKEND_FHIR_TOKEN_ENDPOINT = env('BACKEND_FHIR_TOKEN_ENDPOINT',
+                                  "https://login.microsoftonline.com/example1234/oauth2/token")
