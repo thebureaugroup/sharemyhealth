@@ -16,7 +16,9 @@ def fhir_get_access_token_with_client_credentials():
 
 
 def fhir_secured_request(fhir_endpoint, access_token, params={}):
-    # print("Secure:", fhir_endpoint, params)
+    print("Secure:", fhir_endpoint, params)
     # accesstoken = FhirSecurity("https://nwt-staging.azurehealthcareapis.com")
     header = {"Authorization": "Bearer " + access_token}
-    return requests.get(fhir_endpoint, headers=header, params=params)
+    r = requests.get(fhir_endpoint, params=params, headers=header)
+    print(r.url)
+    return r
