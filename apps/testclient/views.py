@@ -103,7 +103,7 @@ def test_coverage(request):
         return HttpResponseRedirect(reverse('testclient_error_page'))
     oas = OAuth2Session(
         request.session['client_id'], token=request.session['token'])
-    coverage_uri = "%s/fhir/BaseDstu3/Coverage/?_format=json" % (
+    coverage_uri = "%s/fhir/R4/Coverage/?_format=json" % (
         request.session['resource_uri'])
 
     coverage = oas.get(coverage_uri).json()
@@ -116,7 +116,7 @@ def test_patient(request):
         return HttpResponseRedirect(reverse('testclient_error_page'))
     oas = OAuth2Session(
         request.session['client_id'], token=request.session['token'])
-    patient_uri = "%s/fhir/baseDstu3/Patient/%s" % (
+    patient_uri = "%s/fhir/R4/Patient/%s" % (
         request.session['resource_uri'], request.session['patient'])
     patient = oas.get(patient_uri).json(object_pairs_hook=OrderedDict)
     return JsonResponse(patient)
@@ -128,7 +128,7 @@ def test_condition(request):
         return HttpResponseRedirect(reverse('testclient_error_page'))
     oas = OAuth2Session(
         request.session['client_id'], token=request.session['token'])
-    uri = "%s/fhir/baseDstu3/Condition/?subject=%s" % (
+    uri = "%s/fhir/R4/Condition/?subject=%s" % (
         request.session['resource_uri'], request.session['patient'])
     r = oas.get(uri).json(object_pairs_hook=OrderedDict)
     return JsonResponse(r)
@@ -140,7 +140,7 @@ def test_eob(request):
         return HttpResponseRedirect(reverse('testclient_error_page'))
     oas = OAuth2Session(
         request.session['client_id'], token=request.session['token'])
-    eob_uri = "%s/fhir/baseDstu3/ExplanationOfBenefit?subject=%s&_format=json" % (
+    eob_uri = "%s/fhir/R4/ExplanationOfBenefit?patient=%s" % (
         request.session['resource_uri'], request.session['patient'])
     eob = oas.get(eob_uri).json(object_pairs_hook=OrderedDict)
     return JsonResponse(eob)

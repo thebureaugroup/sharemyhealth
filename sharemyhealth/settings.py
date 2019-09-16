@@ -231,7 +231,8 @@ SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
     'http://verifymyidentity:8000')
 
 # Set to True when using in a reverse proxy such as Gunicorn and Nginx
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = bool_env(env('SOCIAL_AUTH_REDIRECT_IS_HTTPS', False))
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = bool_env(
+    env('SOCIAL_AUTH_REDIRECT_IS_HTTPS', False))
 
 REMOTE_LOGOUT_ENDPOINT = "%s/api/v1/remote-logout" % (
     SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT)
@@ -306,30 +307,6 @@ CALL_MEMBER_PLURAL = "members"
 CALL_ORGANIZATION = "organization"
 CALL_ORGANIZATION_PLURAL = "organizations"
 
-# FHIR Server to Proxy (Default) - with trailing slash
-
-DEFAULT_FHIR_SERVER = "http://fhir-test.sharemy.health:8080/fhir/baseDstu3/"
-DEFAULT_OUT_FHIR_SERVER = HOSTNAME_URL + "/fhir/baseDstu3"
-
-
-FHIR_RESOURCES_SUPPORTED = (
-    'Patient',
-    'Observation',
-    'Condition',
-    'Medication',
-    'MedicationStatement',
-    'MedicationOrder',
-    'AllergyIntolerance',
-    'DiagnosticReport',
-    'Procedure',
-    'CarePlan',
-    'Immunization',
-    'Device',
-    'Goal',
-    'Coverage',
-    'ExplanationOfBenefit')
-
-DEFAULT_SAMPLE_FHIR_ID = "472"
 
 DATA_SOURCE_AGREEMENT_TITLE = env(
     'DATA_SOURCE_AGREEMENT_TITLE', 'HIXNY Participation Agreement')
@@ -456,6 +433,43 @@ SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_SAMESITE = None
 
+
+# FHIR Server to Proxy (Default) - with trailing slash on HAPI
+
+DEFAULT_FHIR_SERVER = env('DEFAULT_FHIR_SERVER',
+                          "http://fhir-test.sharemy.health:8080/fhir/baseDstu3/")
+
+DEFAULT_FHIR_URL_PREFIX = env('DEFAULT_FHIR_URL_PREFIX', "/fhir/baseDstu3")
+
+
+# Proxied requests will  have these URLs swapped.
+DEFAULT_OUT_FHIR_SERVER = HOSTNAME_URL + DEFAULT_FHIR_URL_PREFIX
+
+
+# DEFAULT_FHIR_SERVER = "http://fhir-test.sharemy.health:8080/fhir"
+# DEFAULT_OUT_FHIR_SERVER = HOSTNAME_URL + "/fhir/R4"
+
+
+FHIR_RESOURCES_SUPPORTED = (
+    'Patient',
+    'Observation',
+    'Condition',
+    'Medication',
+    'MedicationStatement',
+    'MedicationOrder',
+    'AllergyIntolerance',
+    'DiagnosticReport',
+    'Procedure',
+    'CarePlan',
+    'Immunization',
+    'Device',
+    'Goal',
+    'Coverage',
+    'ExplanationOfBenefit')
+
+DEFAULT_SAMPLE_FHIR_ID = "472"
+
+
 # Backend FHIR server client credentials
 # These may be used to connect to  Miacrsoft Azure Healthcare APIs
 BACKEND_FHIR_CLIENT_ID = env(
@@ -463,6 +477,6 @@ BACKEND_FHIR_CLIENT_ID = env(
 BACKEND_FHIR_CLIENT_SECRET = env(
     'BACKEND_FHIR_CLIENT_SECRET', "change-me")
 BACKEND_FHIR_RESOURCE = env('BACKEND_FHIR_RESOURCE',
-                            "https://example.azurehealthcareapis.com")
+                            DEFAULT_FHIR_SERVER)
 BACKEND_FHIR_TOKEN_ENDPOINT = env('BACKEND_FHIR_TOKEN_ENDPOINT',
                                   "https://login.microsoftonline.com/example1234/oauth2/token")

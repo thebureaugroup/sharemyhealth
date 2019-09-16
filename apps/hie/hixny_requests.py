@@ -162,7 +162,7 @@ def patient_search(access_token, user_profile):
             <PatDOB>%s</PatDOB>
             <PatFamilyName>%s</PatFamilyName>
             <PatGivenName>%s</PatGivenName>
-            <PatMiddleName></PatMiddleName>
+            <PatMiddleName>%s</PatMiddleName>
             <PatPrefix></PatPrefix>
             <PatSuffix></PatSuffix>
             <PatAddrStreetOne></PatAddrStreetOne>
@@ -181,6 +181,7 @@ def patient_search(access_token, user_profile):
         user_profile.birthdate_intersystems,
         user_profile.user.last_name,
         user_profile.user.first_name,
+        user_profile.middle_name,
         settings.HIE_WORKBENCH_USERNAME,
     )
     # print(patient_search_xml)

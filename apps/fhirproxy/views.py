@@ -25,7 +25,7 @@ FHIR_RESOURCE_TO_ID_MAP['CarePlan'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Immunization'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Device'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Goal'] = "patient"
-FHIR_RESOURCE_TO_ID_MAP['ExplanationOfBenefit'] = "subject"
+FHIR_RESOURCE_TO_ID_MAP['ExplanationOfBenefit'] = "patient"
 FHIR_RESOURCE_TO_ID_MAP['Coverage'] = ""
 
 
