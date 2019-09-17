@@ -8,10 +8,11 @@ __author__ = "Alan Viars"
 
 class CrosswalkAdmin(admin.ModelAdmin):
 
-    list_display = ('user', 'user_identifier', 'fhir_patient_id')
+    list_display = ('user_id_type', 'user', 'user_identifier')
     search_fields = [
         'user__first_name',
-        'user__last_name', ]
+        'user__last_name',
+        'user_id_type']
     raw_id_fields = ("user", )
 
 
