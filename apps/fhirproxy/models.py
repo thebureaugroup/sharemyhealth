@@ -15,7 +15,7 @@ class Crosswalk(models.Model):
     """
 
     user = models.ForeignKey(
-        get_user_model(), on_delete=models.PROTECT, null=True)
+        get_user_model(), on_delete=models.CASCADE, null=True)
     fhir_source = models.CharField(default=settings.DEFAULT_FHIR_SERVER,
                                    blank=True, max_length=512,
                                    verbose_name=_('The backend FHIR server to proxy'))
@@ -24,13 +24,12 @@ class Crosswalk(models.Model):
                                              access the FHIR source using values in settings.py""")
 
     fhir_patient_id = models.CharField(max_length=80,
-                                       blank=True, default="", unique=True)
+                                       blank=True, default="")
     date_created = models.DateTimeField(auto_now_add=True)
     user_identifier = models.CharField(max_length=120, blank=True,
                                        default="")
-    user_id_type = models.CharField(max_length=3,
-                                    default="CIN", blank=True,
-                                    choices=(("CIN", "CIN"),))
+    user_id_type = models.CharField(max_length=255,
+                                    default="", blank=True, db_index=True)
     user_id_hash = models.CharField(max_length=64,
                                     blank=True,
                                     default="",
