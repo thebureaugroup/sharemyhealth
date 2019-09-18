@@ -13,13 +13,13 @@ class Migration(migrations.Migration):
         if not env("DJANGO_SUPERUSER_USERNAME", False) or \
             not env("DJANGO_SUPERUSER_USERNAME", False) or \
             not env("DJANGO_SUPERUSER_EMAIL", False):
-            raise Exception("Misconfigured, initial DJANGO_SUPERUSER_USERNAME, PASSWORD and EMAIL should be in the env.")
-
-        User = get_user_model()
-        try:
-            User.objects.create_superuser(env("DJANGO_SUPERUSER_USERNAME"), env("DJANGO_SUPERUSER_EMAIL"), env("DJANGO_SUPERUSER_PASSOWRD"))
-        except IntegrityError:
-            print("The superuser with this username was already created.")
+            print("Misconfigured, initial DJANGO_SUPERUSER_USERNAME, PASSWORD and EMAIL should be in the env.")
+        else:
+            User = get_user_model()
+            try:
+                User.objects.create_superuser(env("DJANGO_SUPERUSER_USERNAME"), env("DJANGO_SUPERUSER_EMAIL"), env("DJANGO_SUPERUSER_PASSOWRD"))
+            except IntegrityError:
+                print("The superuser with this username was already created.")
 
     dependencies = [
     ]
