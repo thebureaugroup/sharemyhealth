@@ -23,7 +23,8 @@ def set_crosswalk_with_id_token(backend, user, response, *args, **kwargs):
                                                                 user_identifier=doc[
                                                                     'num'],
                                                                 user_id_type=doc['type'])
-
+                    if "azurehealthcareapis.com" in doc['uri']:
+                        cw.use_client_credentials = True
                     cw.fhir_source = doc['uri']
                     if doc['type'] == "PATIENT_ID_FHIR":
                         cw.fhir_patient_id = doc['num']
