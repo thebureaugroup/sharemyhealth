@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@+ttixefm9-bu1eknb4k^5dj(f1z0^97b$zan9akdr^4s8cc54'
+SECRET_KEY = env('SECRET_KEY', '@+ttixefm9-bu1eknb4k^5dj(f1z0^97b$zan9akdr^4s8cc54')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool_env(env('DEBUG', True))
@@ -195,10 +195,8 @@ OAUTH2_PROVIDER = {
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
-    'social_core.backends.instagram.InstagramOAuth2',
-    'apps.verifymyidentity.authentication.SocialCoreOpenIdConnect',
+    'apps.verifymyidentity.backends.verifymyidentity.VerifyMyIdentityOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
-
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -221,10 +219,10 @@ SOCIAL_AUTH_PIPELINE = (
 
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY',
-    'sharemyhealth')
+    'sharemyhealth@verifymyidentity')
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SECRET = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SECRET',
-    'sharemyhealth-secret-change-me')
+    'sharemyhealth@verifymyidentity-change-this-secret')
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SCOPE = ['openid', ]
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_IGNORE_DEFAULT_SCOPE = True
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
