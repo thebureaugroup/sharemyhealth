@@ -194,7 +194,7 @@ OAUTH2_PROVIDER = {
 
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
+    # 'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
     'apps.verifymyidentity.backends.verifymyidentity.VerifyMyIdentityOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -470,7 +470,8 @@ DEFAULT_SAMPLE_FHIR_ID = "472"
 
 
 # Backend FHIR server client credentials
-# These may be used to connect to  Miacrsoft Azure Healthcare APIs
+# These may be used to connect to Microsoft Azure Healthcare APIs
+
 BACKEND_FHIR_CLIENT_ID = env(
     'BACKEND_FHIR_CLIENT_ID', "change-me")
 BACKEND_FHIR_CLIENT_SECRET = env(
@@ -479,3 +480,9 @@ BACKEND_FHIR_RESOURCE = env('BACKEND_FHIR_RESOURCE',
                             DEFAULT_FHIR_SERVER)
 BACKEND_FHIR_TOKEN_ENDPOINT = env('BACKEND_FHIR_TOKEN_ENDPOINT',
                                   "https://login.microsoftonline.com/example1234/oauth2/token")
+
+
+AWS_DEFAULT_REGION = env('AWS_DEFAULT_REGION', 'us-east-1')
+
+# Blank means skip EC2.
+EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES = env('EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES', "EC2_PARAMSTORE")
