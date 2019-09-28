@@ -31,7 +31,6 @@ try:
     # Get via EC2 Parameter store
     if EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES == "EC2_PARAMSTORE":
         parameter_store = EC2ParameterStore(region_name=AWS_DEFAULT_REGION)
-        # Automate env (dev)
         django_parameters = parameter_store.get_parameters_by_path(
             PARAMETER_STORE_PATH, strip_path=True
         )
@@ -40,8 +39,6 @@ try:
 except Exception as e:
     print("Exception", e)
 
-print('ENVIRONMENT_VARIABLE_STRATEGY in wsgi.py is',
-      ENVIRONMENT_VARIABLE_STRATEGY)
+print('ENVIRONMENT_VARIABLE_STRATEGY in wsgi.py is', ENVIRONMENT_VARIABLE_STRATEGY)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sharemyhealth.settings')
-
 application = get_wsgi_application()
