@@ -12,7 +12,6 @@ import dotenv
 from getenv import env
 from django.core.wsgi import get_wsgi_application
 from .ssmenv import EC2ParameterStore
-from .settings import EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES
 
 AWS_DEFAULT_REGION = env('AWS_DEFAULT_REGION', 'us-east-1')
 VPC_ENV = env('VPC_ENV', 'dev')
@@ -27,7 +26,8 @@ try:
 
     dotenv.load_dotenv()
     ENVIRONMENT_VARIABLE_STRATEGY = '.ENV'
-
+    EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES = env('EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES',
+                                                'EC2_PARAMSTORE')
     # Get via EC2 Parameter store
     if EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES == "EC2_PARAMSTORE":
         parameter_store = EC2ParameterStore(region_name=AWS_DEFAULT_REGION)
