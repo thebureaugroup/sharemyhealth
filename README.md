@@ -13,9 +13,9 @@ on top of this base project.
 This tool is based off of work done on behalf of the
 Office of the National Coordinator for Health Information
 Technology (HHS ONC) and the  Centers for Medicare and Medicaid
-Services (HHS CMS). It was built provider consumer-facing APIs and shares
-a common code base with the CMS Blue Button 2.0 API. See https://bluebutton.cms.gov/
-for more details.
+Services (HHS CMS). It was built provider consumer-facing APIs
+and shares a common code base with the CMS Blue Button 2.0 API.
+See https://bluebutton.cms.gov/ for more details.
 
 
 Installation
