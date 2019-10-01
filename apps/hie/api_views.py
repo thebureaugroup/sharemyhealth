@@ -1,12 +1,11 @@
 import sys
 import logging
-from datetime import timedelta
 import json
+import traceback
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
-from django.utils import timezone
 from oauth2_provider.decorators import protected_resource
 from collections import OrderedDict
 from .models import HIEProfile
@@ -35,7 +34,7 @@ def get_patient_fhir_content(request):
             if not result.get('error'):
                 hp.__dict__.update(**result)
                 hp.save()
-        except:
+        except Exception:
             logger.error(
                 "Request to fetch_patient_data from Hixny failed for %r: %s"
                 % (up, sys.exc_info()[1])

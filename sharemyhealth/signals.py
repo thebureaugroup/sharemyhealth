@@ -26,7 +26,7 @@ def handle_app_authorized(sender, request, token, **kwargs):
         if not result.get('error'):
             hie_profile.__dict__.update(**result)
             hie_profile.save()
-    except:
+    except Exception:
         logger.error(
             "Request to fetch_patient_data from Hixny failed for %r\n%s"
             % (user_profile, traceback.format_exc())
