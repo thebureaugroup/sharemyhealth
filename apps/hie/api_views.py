@@ -1,3 +1,5 @@
+import sys
+import logging
 from datetime import timedelta
 import json
 from django.contrib.auth.decorators import login_required
@@ -12,38 +14,43 @@ from ..accounts.models import UserProfile
 from . import hixny_requests
 
 
+logger = logging.getLogger(__name__)
+
+
 @require_GET
 @protected_resource()
 def get_patient_fhir_content(request):
-    """Only fetch the patient FHIR data from HIXNY if ALL of the following are true:
+    """Only fetch fresh patient FHIR data from HIXNY 
+    if the client explicitly requests refresh, or there is not yet any data.
 
-    * the request.user is the resource owner, AND
-    * the data is empty or more than 24-hrs old, AND 
-    * user explicitly requests refresh.
+    Otherwise, return whatever data we currently have
     """
     owner = request.resource_owner
-    hp, g_o_c = HIEProfile.objects.get_or_create(user=owner)
+    hp, _ = HIEProfile.objects.get_or_create(user=owner)
 
-    if (
-        request.user == owner
-        and (
-            not hp.fhir_content
-            or (timezone.now() - hp.updated_at) > timedelta(hours=24)
-        )
-        and request.GET.get('refresh', None)
-    ):
-        up, g_o_c = UserProfile.objects.get_or_create(user=owner)
-        hie_data = hixny_requests.fetch_patient_data(owner, hp, up)
-        if not hie_data.get('error'):
-            hp.__dict__.update(**hie_data)
-            hp.save()
-    elif not hp.fhir_content:
-        hie_data = {'error': "FHIR content is not available"}
+    if not hp.fhir_content or request.GET.get('refresh', '').lower() == 'true':
+        up, _ = UserProfile.objects.get_or_create(user=owner)
+        try:
+            result = hixny_requests.fetch_patient_data(owner, hp, up)
+            if not result.get('error'):
+                hp.__dict__.update(**result)
+                hp.save()
+        except:
+            logger.error(
+                "Request to fetch_patient_data from Hixny failed for %r: %s"
+                % (up, sys.exc_info()[1])
+            )
+            logger.debug(traceback.format_exc())
 
-    if hp.fhir_content:
-        return JsonResponse(json.loads(hp.fhir_content))
+    if not hp.fhir_content:
+        hie_data = {'error': 'FHIR content is not available'}
     else:
-        return JsonResponse(hie_data)
+        hie_data = {
+            'fhir_data': json.loads(hp.fhir_content or '{}'),
+            'updated_at': str(hp.updated_at),
+        }
+
+    return JsonResponse(hie_data)
 
 
 @require_GET
