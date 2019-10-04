@@ -201,7 +201,7 @@ AUTHENTICATION_BACKENDS = (
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-SOCIAL_AUTH_PIPELINE = (
+SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     'social_core.pipeline.social_auth.auth_allowed',
@@ -214,8 +214,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
     'apps.accounts.pipeline.oidc.save_profile',
     'apps.fhirproxy.pipeline.identifiers_to_crosswalk.set_crosswalk_with_id_token',
-    'social_core.pipeline.debug.debug',
-)
+]
+
+if DEBUG:
+    SOCIAL_AUTH_PIPELINE.append('social_core.pipeline.debug.debug')
 
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY',
