@@ -2,6 +2,7 @@ import sys
 import logging
 import json
 import traceback
+from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
@@ -27,19 +28,28 @@ def get_patient_fhir_content(request):
     owner = request.resource_owner
     hp, _ = HIEProfile.objects.get_or_create(user=owner)
 
+    logger.debug(
+        "get_patient_fhir_content() for owner=%r, refresh=%r: hp=%r"
+        % (owner, request.GET.get('refresh'), hp)
+    )
+
     if not hp.fhir_content or request.GET.get('refresh', '').lower() == 'true':
         up, _ = UserProfile.objects.get_or_create(user=owner)
         try:
             result = hixny_requests.fetch_patient_data(owner, hp, up)
             if not result.get('error'):
                 hp.__dict__.update(**result)
-                hp.save()
         except Exception:
             logger.error(
                 "Request to fetch_patient_data from Hixny failed for %r: %s"
                 % (up, sys.exc_info()[1])
             )
             logger.debug(traceback.format_exc())
+
+        # even if the hixny request raised an error, still update the HIEProfile object
+        # (that way, smh_app users will not repeated press "Update Now")
+        hp.updated_at = datetime.now(timezone.utc)
+        hp.save()
 
     if not hp.fhir_content:
         hie_data = {'error': 'FHIR content is not available'}

@@ -112,3 +112,4 @@ sitestatic/.DS_Store*
 # Certs
 client-cert.pem
 client-private-key.pem
+testdata
