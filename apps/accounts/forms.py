@@ -3,12 +3,29 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 
+class DeleteAccountForm(forms.Form):
+    confirm = forms.CharField(max_length=30, label=_('Confirm delete'),
+                              help_text=_('Type the word "delete" to confirm.'))
+
+    def clean_confirm(self):
+        confirm = self.cleaned_data.get('confirm')
+        if confirm.lower() != "delete":
+            raise forms.ValidationError(_('Type "delete" to confirm.'))
+        return confirm
+
+    required_css_class = 'required'
+
+
 class AccountSettingsForm(forms.Form):
-    username = forms.CharField(max_length=30, label=_('User Name'), disabled=True)
+    username = forms.CharField(
+        max_length=30, label=_('User Name'), disabled=True)
     email = forms.CharField(max_length=30, label=_('Email'), disabled=True)
-    first_name = forms.CharField(max_length=100, label=_('First Name'), disabled=True)
-    last_name = forms.CharField(max_length=100, label=_('Last Name'), disabled=True)
-    mobile_phone_number = forms.CharField(max_length=10, required=False, disabled=True)
+    first_name = forms.CharField(
+        max_length=100, label=_('First Name'), disabled=True)
+    last_name = forms.CharField(
+        max_length=100, label=_('Last Name'), disabled=True)
+    mobile_phone_number = forms.CharField(
+        max_length=10, required=False, disabled=True)
     organization_name = forms.CharField(max_length=100,
                                         label=_('Organization Name'),
                                         required=False)
