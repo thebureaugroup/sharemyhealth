@@ -30,8 +30,7 @@ if __name__ == '__main__':
             ENVIRONMENT_VARIABLE_STRATEGY = EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES
     except Exception as e:
         print("Exception", e)
-    print('ENVIRONMENT_VARIABLE_STRATEGY in manage.py is',
-          ENVIRONMENT_VARIABLE_STRATEGY)
+    print('ENVIRONMENT_VARIABLE_STRATEGY in manage.py is', ENVIRONMENT_VARIABLE_STRATEGY)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sharemyhealth.settings')
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)
