@@ -14,6 +14,12 @@
     <div class="hero-unit text-center">
 
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                  {% include "include/messages.html" %}
+                </div>
+          </div>
+              
                 <div class="col-md-12">
 
                 
@@ -22,14 +28,10 @@
                     <h3>Welcome to the</h3>
                     <h1>{{ settings.APPLICATION_TITLE }}</h1>
                     
-                    
-                    
-                    <p> This is an API for serving <a href="{{settings.KILLER_APP_URI}}">personal health information</a> using <a href=""https://oauth.net/2/">OAuth2</a>
-                    for delegated access control.</p>
-                    
-
-                    
-                    <h3> APIs Served Here</h2>
+                    <p> This is an API for serving health information</a> using <a href=""https://oauth.net/2/">OAuth2</a>
+                    for delegated access.</p>
+                
+                    <h3>APIs Served Here</h2>
                     <table class="table">
                     <thead>
                       <tr>
@@ -44,18 +46,18 @@
 
                       <tr>
                         <th scope="row">OAuth2 Discovery</th>
-                        <td><a href="{% url "oauth_authorization_server" %}"> {% url "oauth_authorization_server" %} </a></td>
+                        <td><a href="{% url "oauth_authorization_server" %}"> {% url "oauth_authorization_server" %}</a></td>
                         <td>Public</td>
                         <td><a href="https://tools.ietf.org/html/rfc8414">docs</a></td>
-                        <td>See OAuth2 Discovery</td>
+                        <td>See OAuth2 Discovery documentation</td>
                         
                       </tr>
                          <tr>
                         <th scope="row">FHIR Patient Everything</th>
-                        <td><a href="{% url "get_patient_fhir_content" %}"> {% url "get_patient_fhir_content" %} </a></td>
+                        <td><a href="{% url "get_patient_fhir_content" %}"> {% url "get_patient_fhir_content" %}</a></td>
                         <td>OAuth2 (Self/Patient-only)</td>
                         <td><a href="https://www.hl7.org/fhir/operation-patient-everything.html">docs</a></td>
-                        <td>Response is a FHIR Bundle resource.</td>
+                        <td>The response is a FHIR Bundle resource.</td>
                       </tr>
                       
                       <tr>
