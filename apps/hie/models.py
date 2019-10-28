@@ -49,6 +49,10 @@ class HIEProfile(models.Model):
         return 0
 
     @property
+    def name(self):
+        return "%s %s" % (self.user.first_name, self.user.last_name)
+
+    @property
     def subject(self):
         up, g_or_c = UserProfile.objects.get_or_create(user=self.user)
         return up.subject

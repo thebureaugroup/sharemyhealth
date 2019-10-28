@@ -45,14 +45,19 @@
 After they expire you will need to go through Authorization process again.
     
     
-     <h2>What are you waiting for? Try some API calls!!!!</h1>
+     <h2>Clicking the following links will cause this test client to make API calls</h1>
+					
+					<p>NOTE:  These links may require configuration before working properly. These links are only examples.
+					Build your own APIs on top of this open source project, and consider contributing your code back.</p>
+				
      <ul>
-     <li> <a target="_blank" href="{% url 'test_patient_everything_bundle' %}">Patient Everything Bundle</a> </li> 
-     <li> <a target="_blank" href="{% url 'test_eob' %}">ExplanationOfBenefit</a> </li>
-     <li> <a target="_blank" href="{% url 'test_patient' %}">Patient</a> </li>
-     <li> <a target="_blank" href="{% url 'test_coverage' %}">Coverage</a> </li>
-					<li> <a target="_blank" href="{% url 'test_condition' %}">Condition</a> </li>
-     <li> <a target="_blank" href="{% url 'test_userinfo' %}">Profile</a> (OIDC UserInfo) </li>
+     <li> OpenID Connect User Profile <a target="_blank" href="{% url 'test_userinfo' %}">OIDC Profile</a></li>
+					<li> HIE Sourced CDA2FHIR <a target="_blank" href="{% url 'test_patient_everything_bundle' %}">Patient Everything Bundle</a></li> 
+     <li> FHIR Proxy:HAPI/Microsoft Azure/etc.<a target="_blank" href="{% url 'test_eob' %}">ExplanationOfBenefit</a> </li>
+     <li> FHIR Proxy:HAPI/Microsoft Azure/etc.<a target="_blank" href="{% url 'test_patient' %}">Patient</a> </li>
+     <li> FHIR Proxy:HAPI/Microsoft Azure/etc.<a target="_blank" href="{% url 'test_coverage' %}">Coverage</a> </li>
+					<li> FHIR Proxy:HAPI/Microsoft Azure/etc.<a target="_blank" href="{% url 'test_condition' %}">Condition</a> </li>
+
      <li> <a target="_blank" href="{% url 'fhir_metadata_uri' %}">FHIR Metadata </a> (No Token Needed) </li>
      <li> <a target="_blank"  href="{% url 'oauth_authorization_server' %}">OAuth2 Discovery</a> (No Token Needed) </li>
 

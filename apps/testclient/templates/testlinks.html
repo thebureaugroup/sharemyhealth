@@ -38,12 +38,7 @@ test redirect_uri callback function {% url 'testclient-callback' %} will do this
  </p>
      <h1>API Calls</h1>
      <ul>
-
-     <li> <a target="_blank" href="">ExplanationOfBenefit</a> </li>
-     <li> <a target="_blank" href="">Patient</a> </li>
-     <li> <a target="_blank" href="">Coverage</a> </li>
      <li> <a target="_blank" href="{% url 'test_userinfo' %}">Profile </a> (OIDC Userinfo)</li>
-     <li> <a target="_blank" href="{% url 'fhir_metadata_uri' %}">FHIR Metadata </a>(No Token Needed) </li>
      <li> <a target="_blank" href="{% url 'oauth_authorization_server' %}">Discovery </a>(No Token Needed) </li>
      </ul>
     {% if not request.user.is_authenticated %}

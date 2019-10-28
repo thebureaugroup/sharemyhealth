@@ -46,7 +46,7 @@
           <ul class="dropdown-menu">
            <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-legal"></i> Application Access Tokens</a>
 		       
-           {% if user.is_staff or settings.DEBUG %}
+           {% if request.user|has_group:"ApplicationDeveloper" or user.is_staff  %}
            <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-key"></i> Register Applications (Developers)</a>
             {% endif %}
            

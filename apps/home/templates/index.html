@@ -11,7 +11,7 @@
 {% block Content %}
 
 
-    <div class="hero-unit text-center">
+    <div class="hero-unit">
 
         <div class="container-fluid">
             <div class="row">
@@ -24,14 +24,46 @@
 
                 
                 <div class="col-lg-12 well">
+                  
+
                     
-                    <h3>Welcome to the</h3>
-                    <h1>{{ settings.APPLICATION_TITLE }}</h1>
                     
-                    <p> This is an API for serving health information</a> using <a href=""https://oauth.net/2/">OAuth2</a>
-                    for delegated access.</p>
                 
-                    <h3>APIs Served Here</h2>
+                    <h2>Welcome to the {{ settings.APPLICATION_TITLE }}</h2>
+                    
+                    <h4>For Members/Patients</h4>
+                    <p>This service connects your data with 3rd parties such as organizations or applications.
+                    Please check out the <a href={{settings.KILLER_APP_URI}}>ShareMyHealth App</a>.
+                    </p>
+                    
+                    <h4>For Organizations</h4>
+                    <p>Want to gain access to <a href={{settings.KILLER_APP_URI}}>ShareMyHealth App</a> or
+                    connect your own applications? Contact us at {{settings.CONTACT_PHONE }} or {{settings.CONTACT_EMAIL}}
+
+                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">login</a>.</p>
+                    
+                    
+                    
+                    <h4>For Developers</h4>
+                    <p>3rd party applications (OAuth2 clients) may register here to connect to these APIs.
+                    
+                    Contact us at {{settings.CONTACT_PHONE }} or {{settings.CONTACT_EMAIL}}
+                    to setup an online account and gain access to the developers' sandbox.
+                    If you already have an account, then
+                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">login</a>.</p>
+                                     
+                    <h4>About</h4>
+                    <p> This is an instance of <a href="{{settings.DEVELOPER_DOCS_URI}}">{{settings.PROJECT_NAME}}</a>
+                    an open source <a href="https://oauth.net/2/">OAuth2</a> server implementation.
+                    {{settings.PROJECT_NAME}} has built-in support for <a href="https://www.hl7.org/fhir/overview.html">HL7 FHIR</a>.
+                    Use the built-in FHIR APIs or create your own. See the
+                    <a href="https://github.com/TransparentHealth/sharemyhealth/blob/master/README.md">README</a>
+                    for information about customization and configuration.</p>
+                   
+                   
+                <h4>Application Programming Interfaces (APIs)</h4>
+
+                <p>These APIs are configured for this instance.</p>
                     <table class="table">
                     <thead>
                       <tr>
@@ -43,7 +75,8 @@
                       </tr>
                     </thead>
                     <tbody>
-
+                        
+        
                       <tr>
                         <th scope="row">OAuth2 Discovery</th>
                         <td><a href="{% url "oauth_authorization_server" %}"> {% url "oauth_authorization_server" %}</a></td>
@@ -54,7 +87,7 @@
                       </tr>
                          <tr>
                         <th scope="row">FHIR Patient Everything</th>
-                        <td><a href="{% url "get_patient_fhir_content" %}"> {% url "get_patient_fhir_content" %}</a></td>
+                        <td>{% url "get_patient_fhir_content" %}</td>
                         <td>OAuth2 (Self/Patient-only)</td>
                         <td><a href="https://www.hl7.org/fhir/operation-patient-everything.html">docs</a></td>
                         <td>The response is a FHIR Bundle resource.</td>
@@ -62,17 +95,14 @@
                       
                       <tr>
                         <th scope="row">User Profile</th>
-                        <td><a href="{% url "user_profile" %}"> {% url "user_profile" %} </a></td>
+                        <td>{% url "user_profile" %}</td>
                         <td>OAuth2 (Self)</td>
                         <td><a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfo">docs</a></td>
                          <td>Response is in OpenID Connect format. Security tip: Get this information from the upstream id_token instead.</td>
                       </tr>
                     </tbody>
                   </table>
-                    
-          
-                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">
-                                    <button type="button" class="btn btn-primary"> <i class="fa fa-sign-in"></i> Login </button></a>
+                
                                     
                 </div>
                 

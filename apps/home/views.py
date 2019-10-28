@@ -4,7 +4,6 @@ from jwkest.jwt import JWT
 from ..hie.models import HIEProfile
 from ..hie.hixny_requests import acquire_access_token, consumer_directive, get_clinical_document
 from django.contrib import messages
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect, FileResponse
@@ -76,18 +75,6 @@ def authenticated_home(request):
             # redirect to get verified
             messages.warning(request, 'Your identity has not been verified. \
                              This must be completed prior to access to personal health information.')
-
-            if settings.HIE_WORKBENCH_USERNAME:
-
-                if hp.user_accept is False:
-                    messages.warning(
-                        request, 'Your account is not yet connected to {{settings.APPLICATION_TITLE}} \
-                                  personal health information.')
-
-                if hp.cda_content:
-                    messages.success(
-                        request, 'Your account is already linked to your {{settings.APPLICATION_TITLE}} \
-                                  personal health information.')
 
         try:
             profile = request.user.userprofile
