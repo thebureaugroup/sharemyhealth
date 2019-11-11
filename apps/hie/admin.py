@@ -7,7 +7,7 @@ __author__ = "Alan Viars"
 
 
 class HIEProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'subject', 'mrn',)
+    list_display = ('user', 'name', 'subject', 'mrn',)
     search_fields = [
         'user__first_name',
         'user__last_name',

@@ -24,75 +24,35 @@
     <div class="row text-center">
         <div class="col-lg-12">
 
+<h4>Your Information</h4>
 
-
-
-
-{% ifequal id_token_payload.ial  "1" %}
-
-<h3>Identity Verification Required</h3>
-
-<p>Your identity assurance level of <span class="label label-default">{{ id_token_payload.ial }} </span> is insufficient
-to gain access your personal health information (PHI). You will need to
-verify your identity before you can gain full access. Please see your point of contact to complete this step.
-
-{% else%}
-
-<h3>Fetch Data from {{settings.APPLICATION_TITLE}} </h3>
-
-
- {% ifequal hp.mrn "" %}
-                       
-                       <!--
-                         <a href="{% url 'hie_get_authorization' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Connect to HIXNY {{ settings.APPLICATION_TITLE }} </button></a>
-                        -->
- {% else %}
-                       
-                        <a href="{% url 'fetch_cda' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Get the latest CCDA for {{ request.user.first_name.title }} {{ request.user.last_name|title }} </button></a>
-                        <h3>Download your Data</h3>
-
-
-                         <a href="{% url 'get_cda_raw_test' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-download"></i> CDA Format</button></a>
-                        
-                         <a href="{% url 'get_patient_fhir_content_test' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-download"></i> FHIR Format</button></a>
-
-                       
-                        
-{% endifequal %}
-
-
-<a href="{% url 'hie_refresh_patient_data' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> Refresh Data from {{ settings.APPLICATION_TITLE }}  </button></a>
-<a href="{% url 'cda2fhir_patient_data' %}">
-                            <button type="button" class="btn btn-default"> <i class="fa fa-upload"></i> CDA2FHIR </button></a>
-
-<h3>Information About You</h3>
-	Your Identity Assurance Level (IAL) is : <span class="label label-default">{{ id_token_payload.ial }}</span>
-			
-
-{% endifequal %}
+Account Holder: {{id_token_payload.given_name}} {{id_token_payload.family_name}} <br>
+Account #: <span class="label label-default">{{id_token_payload.sub}}</span>  <br>
+Identity Assurance Level: <span class="label label-default">{{ id_token_payload.ial }} </span>
+ {% ifequal id_token_payload.ial  "1" %}
+ 
+ <h3>Identity Verification Required</h3>
+ 
+ <p>Your identity assurance level of <span class="label label-default">{{ id_token_payload.ial }} </span>
+ is insufficient to gain access your personal health information (PHI). You will need an administrator to
+ verify your identity before you can gain full access. Please see your point of contact to complete this step.
+ 
+ {% endifequal %}
 
      
         <div class="col-lg-12">
-
-<h3>Relying Party Information</h3>
-The id_token from the Identity provider is :
+{% if settings.DEBUG %}
+The <a href="{{id_token_payload.iss}}">identity provider's</a> id_token is:
 				<pre>{{ id_token }}</pre>
 				</div>
-            
-
-    
+           
 				</div>
         		          <a href="{% url 'id_token_payload_json' %}">
       <button type="button" class="btn btn-default"> <i class="fa fa-search"></i> Look inside the ID Token</button></a>   
 	    </div>
 
     </div> <!-- /.row -->
- 
+ {% endif %}
  </div> <!-- /.well -->
 </div><!-- /.container -->
 

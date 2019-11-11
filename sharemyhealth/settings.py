@@ -26,7 +26,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@+ttixefm9-bu1eknb4k^5dj(f1z0^97b$zan9akdr^4s8cc54'
+SECRET_KEY = env(
+    'SECRET_KEY', '@+ttixefm9-bu1eknb4k^5dj(f1z0^97b$zan9akdr^4s8cc54')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool_env(env('DEBUG', True))
@@ -53,7 +54,7 @@ INSTALLED_APPS = [
     'apps.verifymyidentity',
     'apps.accounts',
     'apps.testclient',
-    'apps.api',  # Dummy CDA App for now
+    'apps.api',  # Dummy CDA App
     'apps.fhirproxy',
     'apps.hie',
     # 3rd Party ---------------------
@@ -194,37 +195,37 @@ OAUTH2_PROVIDER = {
 
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
-    'social_core.backends.instagram.InstagramOAuth2',
-    'apps.verifymyidentity.authentication.SocialCoreOpenIdConnect',
+    # 'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
+    'apps.verifymyidentity.backends.verifymyidentity.VerifyMyIdentityOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
-
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-SOCIAL_AUTH_PIPELINE = (
+SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
-    'social_core.pipeline.user.get_username',
-    'social_core.pipeline.mail.mail_validation',
+    # Get the username as the sub in  OIDC
+    'apps.verifymyidentity.pipeline.get_subject_id.get_username',
     'social_core.pipeline.user.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'apps.accounts.pipeline.oidc.save_profile',
     'apps.fhirproxy.pipeline.identifiers_to_crosswalk.set_crosswalk_with_id_token',
-    'social_core.pipeline.debug.debug',
-)
+]
+
+if DEBUG:
+    SOCIAL_AUTH_PIPELINE.append('social_core.pipeline.debug.debug')
 
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_KEY',
-    'sharemyhealth')
+    'sharemyhealth@verifymyidentity')
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SECRET = env(
     'SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SECRET',
-    'sharemyhealth-secret-change-me')
+    'sharemyhealth@verifymyidentity-change-this-secret')
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_SCOPE = ['openid', ]
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_IGNORE_DEFAULT_SCOPE = True
 SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT = env(
@@ -243,7 +244,11 @@ DATE_INPUT_FORMATS = ['%Y-%m-%d']  # , '%d-%m-%Y']
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = '/social-auth/login/verifymyidentity-openidconnect'
 
-EXTERNAL_AUTH_NAME = "OpenID Connect"
+EXTERNAL_AUTH_NAME = "Verify My Identity /OpenID Connect"
+
+PROJECT_NAME = env('DJANGO_PROJECT_NAME',
+                   'Share My Health')
+
 
 TOP_LEFT_TITLE = env('DJANGO_TOP_LEFT_TITLE',
                      'Share My Health')
@@ -254,20 +259,23 @@ ORGANIZATION_TITLE = env(
     'DJANGO_ORGANIZATION_TITLE',
     'Alliance for Better Health')
 
+CONTACT_PHONE = env('CONTACT_PHONE', '1-888-871-1017')
+
+CONTACT_EMAIL = env('CONTACT_EMAIL', 'sales@videntity.com')
+
+KILLER_APP_URI = env('KILLER_APP_URI', 'https://app.sharemy.health')
+
 KILLER_APP_URI = env('KILLER_APP_URI', 'https://app.sharemy.health')
 ORGANIZATION_URI = env('DJANGO_ORGANIZATION_URI', 'https://abhealth.us')
-POLICY_URI = env(
-    'DJANGO_POLICY_URI',
-    'https://abhealth.us')
+POLICY_URI = env('DJANGO_POLICY_URI',
+                 'http://sharemy.health/privacy-policy-1.0.html')
 POLICY_TITLE = env('DJANGO_POLICY_TITLE', 'Privacy Policy')
 TOS_URI = env('DJANGO_TOS_URI',
-              'http://sharemy.health/terms-of-service1.0.html')
+              'http://sharemy.health/terms-of-service-1.0.html')
 TOS_TITLE = env('DJANGO_TOS_TITLE', 'Terms of Service')
 TAG_LINE_1 = env('DJANGO_TAG_LINE_1', 'Share your health data')
 TAG_LINE_2 = env('DJANGO_TAG_LINE_2',
                  'with applications, organizations, and people you trust.')
-EXPLAINATION_LINE = 'This service allows Medicare beneficiaries to connect their health data to applications of their choosing.'  # noqa
-EXPLAINATION_LINE = env('DJANGO_EXPLAINATION_LINE ', EXPLAINATION_LINE)
 USER_DOCS_URI = "https://abhealth.us"
 USER_DOCS_TITLE = "User Documentation"
 USER_DOCS = "User Docs"
@@ -283,7 +291,7 @@ DEFAULT_DISCLOSURE_TEXT = """
 
 DISCLOSURE_TEXT = env('DISCLOSURE_TEXT', DEFAULT_DISCLOSURE_TEXT)
 
-HOSTNAME_URL = env('HOSTNAME_URL', 'http://hixny-oauth2:8001')
+HOSTNAME_URL = env('HOSTNAME_URL', 'http://sharemyhealth:8001')
 
 VMI_SIGNUP_URL = "%s/accounts/create-account/%s/?next=%s" % \
                  (SOCIAL_AUTH_VERIFYMYIDENTITY_OPENIDCONNECT_OIDC_ENDPOINT,
@@ -358,6 +366,9 @@ SETTINGS_EXPORT = [
     'DEVELOPER_DOCS_URI',
     'DEVELOPER_DOCS_TITLE',
     'ORGANIZATION_TITLE',
+    'PROJECT_NAME',
+    'CONTACT_PHONE',
+    'CONTACT_EMAIL',
     'POLICY_URI',
     'POLICY_TITLE',
     'DISCLOSURE_TEXT',
@@ -365,7 +376,6 @@ SETTINGS_EXPORT = [
     'TOS_TITLE',
     'TAG_LINE_1',
     'TAG_LINE_2',
-    'EXPLAINATION_LINE',
     'EXTERNAL_AUTH_NAME',
     'USER_DOCS_URI',
     'USER_DOCS',
@@ -472,7 +482,8 @@ DEFAULT_SAMPLE_FHIR_ID = "472"
 
 
 # Backend FHIR server client credentials
-# These may be used to connect to  Miacrsoft Azure Healthcare APIs
+# These may be used to connect to Microsoft Azure Healthcare APIs
+
 BACKEND_FHIR_CLIENT_ID = env(
     'BACKEND_FHIR_CLIENT_ID', "change-me")
 BACKEND_FHIR_CLIENT_SECRET = env(
@@ -481,3 +492,10 @@ BACKEND_FHIR_RESOURCE = env('BACKEND_FHIR_RESOURCE',
                             DEFAULT_FHIR_SERVER)
 BACKEND_FHIR_TOKEN_ENDPOINT = env('BACKEND_FHIR_TOKEN_ENDPOINT',
                                   "https://login.microsoftonline.com/example1234/oauth2/token")
+
+
+AWS_DEFAULT_REGION = env('AWS_DEFAULT_REGION', 'us-east-1')
+
+# Blank means skip EC2.
+EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES = env(
+    'EC2PARAMSTORE_4_ENVIRONMENT_VARIABLES', "EC2_PARAMSTORE")
