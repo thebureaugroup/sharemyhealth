@@ -43,11 +43,11 @@ class UserProfile(models.Model):
         help_text=_('If populated, this field must contain exactly four numbers.'),)
 
     gender = models.CharField(choices=SEX_CHOICES,
-                              max_length=6, default="",
+                              max_length=32, default="",
                               help_text=_('Birth Sex Gender'),
                               )
     gender_identity = models.CharField(choices=GENDER_CHOICES,
-                                       max_length=3, default="",
+                                       max_length=32, default="",
                                        help_text=_('Gender Identity'),
                                        )
 

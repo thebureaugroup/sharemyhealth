@@ -44,38 +44,48 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tasks"></i> Applications <b class="caret"></b></a>
           <ul class="dropdown-menu">
-           <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-legal"></i> Applications You Have Granted Access</a>
-		       <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-key"></i> Register Applications (Developers)</a>
+           <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-legal"></i> Application Access Tokens</a>
+		       
+           {% if request.user|has_group:"ApplicationDeveloper" or user.is_staff  %}
+           <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-key"></i> Register Applications (Developers)</a>
+            {% endif %}
+           
            <li><a href="{% url 'test_links' %}">  <i class="fa fa-key"></i> Test Client (Developers)</a>
 
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-user"></i> [{{ user.first_name }}]<b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-user"></i> Your Data <b class="caret"></b></a>
           <ul class="dropdown-menu">
-						<li><a href="{% url 'account_settings' %}"> <i class="fa fa-gears"></i> Settings</a></li>
-            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout </a></li>
+
+          {% ifequal id_token_payload.ial  "1" %}
+            	<li><a href=""> <i class="fa fa"></i> No ID Verification.</a></li>
+          {% endifequal %}
+          
+          
+          {% ifequal id_token_payload.ial  "2" %}            
+            	<li><a href="{% url 'fetch_cda' %}"> <i class="fa fa-download"></i> Refresh data from HIE {{settings.APPLICATION_TITLE}}</a></li>
+            	<li><a href="{% url 'get_cda_raw_test' %}"> <i class="fa fa-download"></i> Download CDA (No auto-refresh)</a></li>
+              <li><a href="{% url 'get_patient_fhir_content_test' %}"> <i class="fa fa-download"></i> Download FHIR 3 Patient Everything Bundle</a></li>
+          {% endifequal %}
+
+
+          {% ifequal id_token_payload.ial  "3" %}
+            	<li><a href="{% url 'fetch_cda' %}"> <i class="fa fa-download"></i> Refresh data from HIE {{settings.APPLICATION_TITLE}}</a></li>
+            	<li><a href="{% url 'get_cda_raw_test' %}"> <i class="fa fa-download"></i> Download CDA (No auto-refresh)</a></li>
+              <li><a href="{% url 'get_patient_fhir_content_test' %}"> <i class="fa fa-download"></i> Download FHIR 3 Patient Everything Bundle</a></li>
+          {% endifequal %}
+
+
+            <li><a href="{% url 'account_delete' %}"> <i class="fa fa-remove"></i> Delete Account</a></li>
+            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a></li>
           </ul>
         </li>
 
         {% else %}
            
            <li><a href="{% url "social:begin" "verifymyidentity-openidconnect" %}"> <i class="fa fa-sign-in""></i> Login</a></li>
-           
-            <!--
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Account <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-              
-                <li><a href="{% url "social:begin" "google-oauth2" %}"><i class="fa fa-sign-in"></i>  Login with Google+</a></li>
-                <li><a href="{% url "social:begin" "google-openidconnect" %}"><i class="fa fa-sign-in"></i>  Login with Google OpenID Connect</a></li>
-                <li><a href="{% url "social:begin" "instagram" %}"><i class="fa fa-sign-in"></i>  Login with Instagram</a></li>
-                <li><a href="{% url "social:begin" "verifymyidentity-openidconnect" %}"><i class="fa fa-sign-in"></i>  Login with Verify My Identity</a></li>
-              
-              
-              </ul>
-            </li>
--->
+          
 
         {% endif %}
         {% if user.is_authenticated %}

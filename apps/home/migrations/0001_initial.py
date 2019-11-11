@@ -2,14 +2,24 @@
 
 import os
 from django.db import migrations
+from getenv import env
+from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
+
 
 
 class Migration(migrations.Migration):
     def create_root_user(apps, schema_editor):
-        if not os.getenv("ROOT_USER", False) or not os.getenv("ROOT_PASSWORD", False):
-            raise Exception("Misconfigured, initial root user name and password should be in the env")
-        from django.contrib.auth.models import User
-        User.objects.create_superuser(os.getenv("ROOT_USER"), os.getenv("ROOT_USER"), os.getenv("ROOT_PASSWORD"))
+        if not env("DJANGO_SUPERUSER_USERNAME", False) or \
+            not env("DJANGO_SUPERUSER_USERNAME", False) or \
+            not env("DJANGO_SUPERUSER_EMAIL", False):
+            print("Misconfigured, initial DJANGO_SUPERUSER_USERNAME, PASSWORD and EMAIL should be in the env.")
+        else:
+            User = get_user_model()
+            try:
+                User.objects.create_superuser(env("DJANGO_SUPERUSER_USERNAME"), env("DJANGO_SUPERUSER_EMAIL"), env("DJANGO_SUPERUSER_PASSOWRD"))
+            except IntegrityError:
+                print("The superuser with this username was already created.")
 
     dependencies = [
     ]
