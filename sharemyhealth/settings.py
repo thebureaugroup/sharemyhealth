@@ -57,7 +57,17 @@ INSTALLED_APPS = [
     'apps.api',  # Dummy CDA App
     'apps.fhirproxy',
     'apps.hie',
-    # 3rd Party ---------------------
+    # Djmongo -----------------------------------------------------
+    # 'djmongo',
+    # 'djmongo.console',
+    # 'djmongo.read',
+    # 'djmongo.dataimport',
+    # 'djmongo.write',
+    # 'djmongo.aggregations',
+    # 
+    
+    # 3rd Party ---------------------------------------------------
+    'widget_tweaks',
     'corsheaders',
     'bootstrapform',
     'social_django',  # Python Social Auth
@@ -434,8 +444,10 @@ HIE_CLIENT_PRIVATE_KEY_FILEPATH = env(
 
 
 # Should be operated behind a firewall and in ssl/https in production.
-CDA2FHIR_SERVICE_URL = env('CDA2FHIR_SERVICE',
-                           'http://cda2fhirservice-env.hrqqzkhy23.us-east-1.elasticbeanstalk.com/api/convert')
+CDA2FHIR_SERVICE = env('CDA2FHIR_SERVICE',
+                           'http://cda2fhirservice-env.example.com')
+
+CDA2FHIR_SERVICE_URL = "%s/api/convert" % (CDA2FHIR_SERVICE)
 
 # Expire in 30 minutes
 SESSION_COOKIE_AGE = int(env('SESSION_COOKIE_AGE', int(30 * 60)))
