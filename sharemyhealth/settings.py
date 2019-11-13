@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     # 'djmongo.dataimport',
     # 'djmongo.write',
     # 'djmongo.aggregations',
-    # 
-    
+    #
+
     # 3rd Party ---------------------------------------------------
     'widget_tweaks',
     'corsheaders',
@@ -445,7 +445,7 @@ HIE_CLIENT_PRIVATE_KEY_FILEPATH = env(
 
 # Should be operated behind a firewall and in ssl/https in production.
 CDA2FHIR_SERVICE = env('CDA2FHIR_SERVICE',
-                           'http://cda2fhirservice-env.example.com')
+                       'http://cda2fhirservice-env.example.com')
 
 CDA2FHIR_SERVICE_URL = "%s/api/convert" % (CDA2FHIR_SERVICE)
 
