@@ -32,6 +32,7 @@ admin.site.index_title = "Share My Health: OAuth2 and FHIR Server Site Administr
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'^djm/', include('djmongo.urls')),
     url('social-auth/', include('social_django.urls', namespace='social')),
     path('accounts/', include('apps.accounts.urls')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

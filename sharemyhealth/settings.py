@@ -58,12 +58,12 @@ INSTALLED_APPS = [
     'apps.fhirproxy',
     'apps.hie',
     # Djmongo -----------------------------------------------------
-    # 'djmongo',
-    # 'djmongo.console',
-    # 'djmongo.read',
-    # 'djmongo.dataimport',
-    # 'djmongo.write',
-    # 'djmongo.aggregations',
+    'djmongo',
+    'djmongo.console',
+    'djmongo.read',
+    'djmongo.dataimport',
+    'djmongo.write',
+    'djmongo.aggregations',
     #
 
     # 3rd Party ---------------------------------------------------
