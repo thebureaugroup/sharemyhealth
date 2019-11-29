@@ -31,19 +31,6 @@
                 
                     <h2>Welcome to the {{ settings.APPLICATION_TITLE }}</h2>
                     
-                    <h4>For Members/Patients</h4>
-                    <p>This service connects your data with 3rd parties such as organizations or applications.
-                    Please check out the <a href={{settings.KILLER_APP_URI}}>ShareMyHealth App</a>.
-                    </p>
-                    
-                    <h4>For Organizations</h4>
-                    <p>Want to gain access to <a href={{settings.KILLER_APP_URI}}>ShareMyHealth App</a> or
-                    connect your own applications? Contact us at {{settings.CONTACT_PHONE }} or {{settings.CONTACT_EMAIL}}
-
-                    <a href="{% url "social:begin" "verifymyidentity-openidconnect" %}">login</a>.</p>
-                    
-                    
-                    
                     <h4>For Developers</h4>
                     <p>3rd party applications (OAuth2 clients) may register here to connect to these APIs.
                     
