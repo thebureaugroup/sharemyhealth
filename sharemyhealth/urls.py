@@ -8,7 +8,7 @@ from oauth2_provider import views
 from apps.hie.decorators import check_ial_before_allowing_authorize
 # from django.views.generic import TemplateView
 from . import signals  # noqa
-
+from .utils import IsAppInstalled
 
 __author__ = "Alan Viars"
 
@@ -18,7 +18,6 @@ admin.site.index_title = "Share My Health: OAuth2 and FHIR Server Site Administr
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^djm/', include('djmongo.urls')),
     url('social-auth/', include('social_django.urls', namespace='social')),
     path('accounts/', include('apps.accounts.urls')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
@@ -36,3 +35,8 @@ urlpatterns = [
     path('', authenticated_home, name='home'),
 
 ]
+
+if IsAppInstalled("djmongo"):
+    urlpatterns += [
+        url(r'^djm/', include('djmongo.urls')),
+    ]
