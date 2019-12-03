@@ -37,9 +37,19 @@ if DEBUG:
 
 ALLOWED_HOSTS = ['*', ]
 
+# A function to install app only if they are installed.
+
+
+def _enable_conditional(application):
+    global INSTALLED_APPS
+    try:
+        __import__(application)
+        INSTALLED_APPS += (application,)
+    except ImportError:
+        pass
+
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,14 +67,6 @@ INSTALLED_APPS = [
     'apps.api',  # Dummy CDA App
     'apps.fhirproxy',
     'apps.hie',
-    # Djmongo -----------------------------------------------------
-    'djmongo',
-    'djmongo.console',
-    'djmongo.read',
-    'djmongo.dataimport',
-    'djmongo.write',
-    'djmongo.aggregations',
-    #
 
     # 3rd Party ---------------------------------------------------
     'widget_tweaks',
@@ -72,6 +74,15 @@ INSTALLED_APPS = [
     'bootstrapform',
     'social_django',  # Python Social Auth
 ]
+
+# Add djmongo if it is already installed.
+_enable_conditional('djmongo')
+_enable_conditional('djmongo.console')
+_enable_conditional('djmongo.read')
+_enable_conditional('djmongo.dataimport')
+_enable_conditional('djmongo.write')
+_enable_conditional('djmongo.aggregations')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
