@@ -37,7 +37,7 @@ social-auth-app-django==3.1.0
 git+https://github.com/mpdavis/python-jose.git@414e71b77718850e0208fa9f8682867676592dd9#egg=python-jose
 pyjwkest==1.4.0
 tox==3.2.1
-urllib3==1.24.3
+urllib3==1.26.5
 virtualenv==16.0.0
 djangorestframework==3.9.1
 djangorestframework-xml==1.4.0
